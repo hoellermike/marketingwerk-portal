@@ -68,7 +68,7 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate }:
               </div>
               <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                 {app.job_campaigns?.jobtitel && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-kpi-blue text-blue-700">{app.job_campaigns.jobtitel}</span>
+                  <span className="text-xs px-2 py-0.5 rounded-full bg-gray-50 text-blue-700">{app.job_campaigns.jobtitel}</span>
                 )}
                 <span className="text-xs text-gray-400">Beworben am {formatDate(app.bewerbungsdatum)}</span>
               </div>
@@ -153,7 +153,7 @@ function ProfileTab({ app }: { app: ApplicationDetail }) {
 
       {/* MW Einschätzung */}
       {app.mw_einschaetzung && (
-        <div className="bg-kpi-blue rounded-2xl p-4 border border-blue-200/50">
+        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
           <p className="text-xs font-semibold text-blue-700 mb-1">marketingwerk-Einschätzung</p>
           <p className="text-sm text-gray-700">{app.mw_einschaetzung}</p>
         </div>

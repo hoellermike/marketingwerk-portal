@@ -29,7 +29,7 @@ export default function AnnouncementBanner() {
   if (!ann) return null
 
   return (
-    <div className="rounded-2xl bg-kpi-blue p-5 flex items-start gap-3 shadow-sm">
+    <div className="rounded-2xl bg-gray-50 p-5 flex items-start gap-3 shadow-sm">
       <div className="w-9 h-9 rounded-xl bg-blue-200/60 flex items-center justify-center shrink-0">
         <Megaphone size={18} className="text-accent" />
       </div>

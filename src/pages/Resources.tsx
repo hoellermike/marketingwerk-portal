@@ -41,7 +41,7 @@ export default function Resources() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
               >
-                <div className="p-2 rounded-xl bg-kpi-blue text-accent">
+                <div className="p-2 rounded-xl bg-gray-50 text-[#3572E8]">
                   <t.icon size={20} />
                 </div>
                 <div>
@@ -69,7 +69,7 @@ export default function Resources() {
                 rel="noopener noreferrer"
                 className="flex items-center gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
               >
-                <div className="p-2 rounded-xl bg-kpi-purple text-purple-600">
+                <div className="p-2 rounded-xl bg-gray-50 text-[#3572E8]">
                   <f.icon size={20} />
                 </div>
                 <div>

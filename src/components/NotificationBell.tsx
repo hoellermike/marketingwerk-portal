@@ -93,7 +93,7 @@ export default function NotificationBell({ onNavigate }: Props) {
                 <button
                   key={n.id}
                   onClick={() => markRead(n)}
-                  className={`w-full text-left px-4 py-3 hover:bg-content-bg transition-colors border-b border-card-border last:border-0 ${!n.read ? 'bg-kpi-blue/30' : ''}`}
+                  className={`w-full text-left px-4 py-3 hover:bg-content-bg transition-colors border-b border-card-border last:border-0 ${!n.read ? 'bg-gray-50/30' : ''}`}
                 >
                   <p className="text-sm text-gray-900 font-medium">{n.title}</p>
                   {n.body && <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.body}</p>}

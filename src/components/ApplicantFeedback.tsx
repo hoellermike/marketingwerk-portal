@@ -41,7 +41,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
   // Not yet presented — show waiting message
   if (!isVorgestellt && !hasFeedback) {
     return (
-      <div className="flex items-center gap-3 bg-kpi-blue rounded-2xl p-5">
+      <div className="flex items-center gap-3 bg-gray-50 rounded-2xl p-5">
         <Clock size={18} className="text-blue-500 shrink-0" />
         <div>
           <p className="text-sm font-medium text-gray-900">Dieser Bewerber wird noch geprüft</p>

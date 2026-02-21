@@ -1,12 +1,11 @@
 import type { LucideIcon } from 'lucide-react'
-import { MoreVertical } from 'lucide-react'
 
-const tintClasses: Record<string, { bg: string; iconBg: string; iconText: string }> = {
-  mint: { bg: 'bg-kpi-mint', iconBg: 'bg-emerald-200/60', iconText: 'text-emerald-600' },
-  peach: { bg: 'bg-kpi-peach', iconBg: 'bg-orange-200/60', iconText: 'text-orange-600' },
-  blue: { bg: 'bg-kpi-blue', iconBg: 'bg-blue-200/60', iconText: 'text-blue-600' },
-  purple: { bg: 'bg-kpi-purple', iconBg: 'bg-purple-200/60', iconText: 'text-purple-600' },
-  gold: { bg: 'bg-kpi-gold', iconBg: 'bg-amber-200/60', iconText: 'text-amber-600' },
+const iconColors: Record<string, string> = {
+  mint: 'text-emerald-600',
+  peach: 'text-orange-600',
+  blue: 'text-[#3572E8]',
+  purple: 'text-purple-600',
+  gold: 'text-amber-600',
 }
 
 interface KPICardProps {
@@ -19,21 +18,15 @@ interface KPICardProps {
   subtitle?: string
 }
 
-export default function KPICard({ label, value, icon: Icon, tint, highlighted, trend, subtitle }: KPICardProps) {
-  const t = tint ? tintClasses[tint] : null
-  const bg = t ? t.bg : highlighted ? 'bg-kpi-gold' : 'bg-white'
-  const iconBg = t ? t.iconBg : highlighted ? 'bg-amber-200/60' : 'bg-accent/10'
-  const iconText = t ? t.iconText : highlighted ? 'text-amber-600' : 'text-accent'
+export default function KPICard({ label, value, icon: Icon, tint, trend, subtitle }: KPICardProps) {
+  const iconText = tint ? iconColors[tint] : 'text-[#3572E8]'
 
   return (
-    <div className={`rounded-2xl p-5 shadow-sm ${bg}`}>
+    <div className="rounded-2xl border border-gray-100 bg-white p-5">
       <div className="flex items-start justify-between mb-3">
-        <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${iconBg}`}>
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-50">
           <Icon size={18} className={iconText} />
         </div>
-        <button className="text-gray-300 hover:text-gray-500 transition-colors">
-          <MoreVertical size={16} />
-        </button>
       </div>
       <div className="flex items-baseline gap-2">
         <p className="text-2xl font-bold text-gray-900">{value}</p>

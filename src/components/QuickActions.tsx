@@ -19,7 +19,7 @@ export default function QuickActions() {
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <Zap size={18} className="text-accent" />
+        <Zap size={18} className="text-[#3572E8]" />
         <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -31,7 +31,7 @@ export default function QuickActions() {
             rel="noopener noreferrer"
             className="flex items-start gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
           >
-            <div className="p-2 rounded-xl bg-kpi-blue text-accent">
+            <div className="p-2 rounded-xl bg-gray-50 text-[#3572E8]">
               <a.icon size={20} />
             </div>
             <div>

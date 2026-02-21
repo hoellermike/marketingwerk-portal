@@ -23,10 +23,10 @@ interface Props {
 }
 
 const eventIcons: Record<string, { icon: typeof Send; bg: string; text: string }> = {
-  status_change: { icon: ArrowRight, bg: 'bg-kpi-blue', text: 'text-blue-600' },
-  feedback:      { icon: Star, bg: 'bg-kpi-gold', text: 'text-amber-600' },
-  document:      { icon: FileText, bg: 'bg-kpi-mint', text: 'text-emerald-600' },
-  interview:     { icon: UserCheck, bg: 'bg-kpi-purple', text: 'text-purple-600' },
+  status_change: { icon: ArrowRight, bg: 'bg-gray-50', text: 'text-blue-600' },
+  feedback:      { icon: Star, bg: 'bg-gray-50', text: 'text-amber-600' },
+  document:      { icon: FileText, bg: 'bg-gray-50', text: 'text-emerald-600' },
+  interview:     { icon: UserCheck, bg: 'bg-gray-50', text: 'text-purple-600' },
   message:       { icon: MessageSquare, bg: 'bg-gray-100', text: 'text-gray-600' },
 }
 

@@ -13,11 +13,11 @@ interface ActivityItem {
 }
 
 const iconMap: Record<string, { icon: typeof Users; bg: string; text: string }> = {
-  lead: { icon: Users, bg: 'bg-kpi-blue', text: 'text-accent' },
-  kpi_update: { icon: BarChart3, bg: 'bg-kpi-mint', text: 'text-emerald-600' },
-  campaign_started: { icon: Play, bg: 'bg-kpi-purple', text: 'text-purple-600' },
+  lead: { icon: Users, bg: 'bg-gray-50', text: 'text-accent' },
+  kpi_update: { icon: BarChart3, bg: 'bg-gray-50', text: 'text-emerald-600' },
+  campaign_started: { icon: Play, bg: 'bg-gray-50', text: 'text-purple-600' },
   campaign_ended: { icon: Square, bg: 'bg-gray-100', text: 'text-gray-500' },
-  credit: { icon: CreditCard, bg: 'bg-kpi-gold', text: 'text-amber-600' },
+  credit: { icon: CreditCard, bg: 'bg-gray-50', text: 'text-amber-600' },
 }
 
 function relativeTime(dateStr: string): string {
