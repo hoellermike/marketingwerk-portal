@@ -2,11 +2,13 @@ import { useState, useMemo } from 'react'
 import { ChevronLeft, ChevronRight, Plus, X } from 'lucide-react'
 import type { JobCampaign } from '../pages/Campaigns'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import { supabase } from '../lib/supabase'
 
 interface CampaignCalendarProps {
   campaigns: JobCampaign[]
   onRefresh: () => void
+  onOpenBriefing?: (jobtitel: string, start?: string | null, end?: string | null) => void
 }
 
 type ViewMode = 'month' | 'quarter' | 'year'
@@ -73,13 +75,22 @@ function PlanModal({ onClose, onSave }: { onClose: () => void; onSave: (d: { job
   )
 }
 
-export default function CampaignCalendar({ campaigns, onRefresh }: CampaignCalendarProps) {
+export default function CampaignCalendar({ campaigns, onRefresh, onOpenBriefing }: CampaignCalendarProps) {
   const { client } = useAuth()
+  const { showToast } = useToast()
   const today = new Date()
   const [currentDate, setCurrentDate] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
   const [viewMode, setViewMode] = useState<ViewMode>('month')
   const [showPlan, setShowPlan] = useState(false)
   const [tooltip, setTooltip] = useState<{ x: number; y: number; campaign: JobCampaign } | null>(null)
+  const [popover, setPopover] = useState<{ x: number; y: number; campaign: JobCampaign } | null>(null)
+
+  const handleDeletePlanned = async (id: string) => {
+    await supabase.from('job_campaigns').delete().eq('id', id)
+    showToast('Geplante Kampagne gelöscht')
+    setPopover(null)
+    onRefresh()
+  }
 
   const year = currentDate.getFullYear()
   const month = currentDate.getMonth()
@@ -229,6 +240,7 @@ export default function CampaignCalendar({ campaigns, onRefresh }: CampaignCalen
                         style={{ left: bar.left, width: bar.width, minWidth: '4px' }}
                         onMouseEnter={e => setTooltip({ x: e.clientX, y: e.clientY, campaign: c })}
                         onMouseLeave={() => setTooltip(null)}
+                        onClick={e => { e.stopPropagation(); setTooltip(null); setPopover({ x: e.clientX, y: e.clientY, campaign: c }) }}
                       />
                     )}
                   </div>

@@ -7,7 +7,7 @@ import { exportData, formatDateExport } from '../lib/export'
 import ExportModal from '../components/ExportModal'
 import BriefingWizard from '../components/BriefingWizard'
 import CampaignCalendar from '../components/CampaignCalendar'
-import { Plus, List, Calendar, Download, Megaphone } from 'lucide-react'
+import { Plus, List, Calendar, Download, Megaphone, FileEdit, Trash2 } from 'lucide-react'
 import { SkeletonStatusCards, SkeletonCard } from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
 import { useToast } from '../contexts/ToastContext'
@@ -59,9 +59,12 @@ export default function Campaigns() {
   const { client } = useAuth()
   const [campaigns, setCampaigns] = useState<JobCampaign[]>([])
   const [showWizard, setShowWizard] = useState(false)
+  const [wizardDraftId, setWizardDraftId] = useState<string | undefined>(undefined)
+  const [wizardPrefill, setWizardPrefill] = useState<Record<string, any> | undefined>(undefined)
   const [view, setView] = useState<'list' | 'calendar'>('list')
   const [showExport, setShowExport] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
   const { showToast } = useToast()
 
   const handleExport = (format: 'xlsx' | 'csv') => {
@@ -113,6 +116,34 @@ export default function Campaigns() {
 
   useEffect(() => { fetchCampaigns() }, [fetchCampaigns])
 
+  // Drafts
+  const drafts = useMemo(() => campaigns.filter(c => (c as any).briefing_status === 'entwurf'), [campaigns])
+
+  const openWizardForDraft = (draftId: string) => {
+    setWizardDraftId(draftId)
+    setWizardPrefill(undefined)
+    setShowWizard(true)
+  }
+
+  const openWizardFresh = () => {
+    setWizardDraftId(undefined)
+    setWizardPrefill(undefined)
+    setShowWizard(true)
+  }
+
+  const openWizardWithPrefill = (prefill: Record<string, any>) => {
+    setWizardDraftId(undefined)
+    setWizardPrefill(prefill)
+    setShowWizard(true)
+  }
+
+  const handleDeleteDraft = async (id: string) => {
+    await supabase.from('job_campaigns').delete().eq('id', id)
+    showToast('Entwurf gelöscht')
+    setDeleteConfirm(null)
+    fetchCampaigns()
+  }
+
   // Count campaigns by status
   const statusCounts = useMemo(() => {
     const counts: Record<string, number> = { aktiv: 0, vorbereitung: 0, abgeschlossen: 0, pausiert: 0 }
@@ -127,7 +158,7 @@ export default function Campaigns() {
 
   return (
     <div className="space-y-6">
-      {showWizard && <BriefingWizard onClose={() => { setShowWizard(false); fetchCampaigns() }} pastCampaigns={campaigns.map(c => ({ id: c.id, jobtitel: c.jobtitel }))} />}
+      {showWizard && <BriefingWizard onClose={() => { setShowWizard(false); setWizardDraftId(undefined); setWizardPrefill(undefined); fetchCampaigns() }} pastCampaigns={campaigns.map(c => ({ id: c.id, jobtitel: c.jobtitel }))} draftId={wizardDraftId} prefill={wizardPrefill as any} />}
 
       {/* Header + Date Filter */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
@@ -136,7 +167,7 @@ export default function Campaigns() {
             <h1 className="text-2xl font-bold text-gray-900">Kampagnen</h1>
             <p className="text-sm text-gray-500 mt-1">Übersicht Ihrer Kampagnen</p>
           </div>
-          <button onClick={() => setShowWizard(true)} className="flex items-center gap-1.5 px-4 py-2 bg-[#3572E8] text-white rounded-lg text-sm font-medium hover:bg-[#2860d0] transition-colors">
+          <button onClick={openWizardFresh} className="flex items-center gap-1.5 px-4 py-2 bg-[#3572E8] text-white rounded-lg text-sm font-medium hover:bg-[#2860d0] transition-colors">
             <Plus size={16} /> Neue Kampagne anfragen
           </button>
           <button onClick={() => setShowExport(true)} className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-700 rounded-lg px-3 py-2 hover:bg-gray-50 transition-colors">
@@ -174,8 +205,38 @@ export default function Campaigns() {
           <SkeletonCard lines={4} />
         </>
       ) : view === 'calendar' ? (
-        <CampaignCalendar campaigns={campaigns} onRefresh={fetchCampaigns} />
+        <CampaignCalendar campaigns={campaigns} onRefresh={fetchCampaigns} onOpenBriefing={(jobtitel, start, end) => openWizardWithPrefill({ jobtitel, kampagnenstart: start || '', ...(end ? {} : {}) })} />
       ) : (<>
+      {/* Drafts Section */}
+      {drafts.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <FileEdit size={18} className="text-[#3572E8]" />
+            <h2 className="text-lg font-semibold text-gray-900">Entwürfe</h2>
+          </div>
+          <div className="space-y-2">
+            {drafts.map(d => (
+              <div key={d.id} className="bg-white rounded-xl border border-gray-100 px-5 py-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">{d.jobtitel} — <span className="text-gray-400">Entwurf</span></p>
+                  {d.kpi_updated_at && <p className="text-xs text-gray-400 mt-0.5">Zuletzt bearbeitet: {formatDate(d.kpi_updated_at)}</p>}
+                </div>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => openWizardForDraft(d.id)}
+                    className="text-sm font-medium text-[#3572E8] hover:underline flex items-center gap-1">
+                    Fortsetzen →
+                  </button>
+                  <button onClick={() => setDeleteConfirm(d.id)}
+                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors">
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Status Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {statusConfig.map(sc => (
@@ -206,6 +267,22 @@ export default function Campaigns() {
           onExport={handleExport}
           title="Kampagnen exportieren"
         />
+      )}
+
+      {deleteConfirm && (
+        <>
+          <div className="fixed inset-0 bg-black/30 z-50" onClick={() => setDeleteConfirm(null)} />
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-xl border border-gray-100 shadow-xl w-full max-w-sm p-6">
+              <h3 className="text-base font-bold text-gray-900 mb-2">Entwurf löschen?</h3>
+              <p className="text-sm text-gray-500 mb-5">Dieser Entwurf wird unwiderruflich gelöscht.</p>
+              <div className="flex gap-3">
+                <button onClick={() => setDeleteConfirm(null)} className="flex-1 px-4 py-2.5 text-sm border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-colors">Abbrechen</button>
+                <button onClick={() => handleDeleteDraft(deleteConfirm)} className="flex-1 px-4 py-2.5 text-sm bg-red-500 text-white rounded-xl hover:bg-red-600 transition-colors font-medium">Löschen</button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )

@@ -103,13 +103,50 @@ const inputCls = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm foc
 const selectCls = inputCls
 const labelCls = "block text-sm font-medium text-gray-700 mb-1"
 
-export default function BriefingWizard({ onClose, pastCampaigns = [] }: BriefingWizardProps) {
+export default function BriefingWizard({ onClose, pastCampaigns = [], draftId, prefill }: BriefingWizardProps) {
   const { client } = useAuth()
   const [step, setStep] = useState(0)
-  const [data, setData] = useState<BriefingData>(initialData)
+  const [data, setData] = useState<BriefingData>(prefill ? { ...initialData, ...prefill } : initialData)
   const [submitted, setSubmitted] = useState(false)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState('')
+  const [loadedDraft, setLoadedDraft] = useState(!!draftId)
+  const [pastCampaignsFull, setPastCampaignsFull] = useState<{ id: string; jobtitel: string; briefing_data: BriefingData | null }[]>([])
+
+  // Load draft data
+  useState(() => {
+    if (draftId) {
+      supabase.from('job_campaigns').select('briefing_data, jobtitel').eq('id', draftId).single().then(({ data: row }) => {
+        if (row?.briefing_data) {
+          setData({ ...initialData, ...(row.briefing_data as BriefingData) })
+        } else if (row?.jobtitel) {
+          setData(d => ({ ...d, jobtitel: row.jobtitel }))
+        }
+        setLoadedDraft(true)
+      })
+    }
+  })
+
+  // Load past campaigns for template feature
+  useState(() => {
+    if (client) {
+      supabase.from('job_campaigns').select('id, jobtitel, briefing_data')
+        .eq('client_id', client.id)
+        .in('status', ['aktiv', 'active', 'ended', 'beendet'])
+        .then(({ data: rows }) => {
+          if (rows) setPastCampaignsFull(rows as any)
+        })
+    }
+  })
+
+  const loadTemplate = (campaignId: string) => {
+    const tpl = pastCampaignsFull.find(c => c.id === campaignId)
+    if (tpl?.briefing_data) {
+      setData({ ...initialData, ...tpl.briefing_data })
+      setToast(`Vorlage von '${tpl.jobtitel}' geladen`)
+      setTimeout(() => setToast(''), 3000)
+    }
+  }
 
   const set = <K extends keyof BriefingData>(key: K, val: BriefingData[K]) => setData(d => ({ ...d, [key]: val }))
 
@@ -129,7 +166,17 @@ export default function BriefingWizard({ onClose, pastCampaigns = [] }: Briefing
         total_leads: 0, qualified_leads: 0, total_spend: 0, impressions: 0, clicks: 0,
         ctr: 0, cvr: 0, cpl: 0, cpql: 0, reach: 0, link_clicks: 0, cpm: 0,
       }
-      await supabase.from('job_campaigns').insert(briefing)
+      if (draftId) {
+        await supabase.from('job_campaigns').update({
+          jobtitel: briefing.jobtitel,
+          status: briefing.status,
+          briefing_status: briefing.briefing_status,
+          briefing_data: briefing.briefing_data,
+          start_date: briefing.start_date,
+        }).eq('id', draftId)
+      } else {
+        await supabase.from('job_campaigns').insert(briefing)
+      }
       if (status === 'eingereicht') {
         setSubmitted(true)
       } else {
@@ -193,12 +240,15 @@ export default function BriefingWizard({ onClose, pastCampaigns = [] }: Briefing
         <div className="bg-white rounded-xl border border-gray-100 p-6 sm:p-8">
           {step === 0 && (
             <div className="space-y-5">
-              {pastCampaigns.length > 0 && (
+              {pastCampaignsFull.length > 0 && (
                 <div className="bg-blue-50 rounded-lg p-4 text-sm text-[#3572E8]">
                   💡 Ähnliche Stelle schon mal ausgeschrieben?
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {pastCampaigns.map(c => (
-                      <span key={c.id} className="px-3 py-1 bg-white rounded-full text-xs border border-[#3572E8]/20">{c.jobtitel}</span>
+                    {pastCampaignsFull.map(c => (
+                      <button key={c.id} type="button" onClick={() => loadTemplate(c.id)}
+                        className="px-3 py-1 bg-white rounded-full text-xs border border-[#3572E8]/20 hover:bg-[#3572E8] hover:text-white transition-colors cursor-pointer">
+                        {c.jobtitel}
+                      </button>
                     ))}
                   </div>
                 </div>
