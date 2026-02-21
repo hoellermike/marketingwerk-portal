@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { JobCampaign } from '../pages/Campaigns'
 import { formatDate } from '../lib/format'
+import { CalendarDays } from 'lucide-react'
 
 interface Props {
   campaigns: JobCampaign[]
@@ -38,7 +39,6 @@ export default function CampaignTimeline({ campaigns }: Props) {
   const today = Date.now()
   const todayPct = ((today - rangeStart) / range) * 100
 
-  // Generate month markers
   const months: { label: string; pct: number }[] = []
   const d = new Date(rangeStart)
   d.setDate(1)
@@ -51,7 +51,10 @@ export default function CampaignTimeline({ campaigns }: Props) {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-4">Kampagnen-Timeline</h2>
+      <div className="flex items-center gap-2 mb-4">
+        <CalendarDays size={18} className="text-accent" />
+        <h2 className="text-lg font-semibold text-gray-900">Kampagnen-Timeline</h2>
+      </div>
       <div className="relative">
         {/* Month labels */}
         <div className="relative h-5 mb-1">
@@ -64,13 +67,13 @@ export default function CampaignTimeline({ campaigns }: Props) {
 
         {/* Bars */}
         <div className="relative space-y-2">
-          {/* Today marker */}
+          {/* Today marker — blue dashed line */}
           {todayPct >= 0 && todayPct <= 100 && (
             <div
-              className="absolute top-0 bottom-0 w-px border-l-2 border-dashed border-red-400 z-10"
+              className="absolute top-0 bottom-0 w-px border-l-2 border-dashed border-accent z-10"
               style={{ left: `${todayPct}%` }}
             >
-              <span className="absolute -top-5 -translate-x-1/2 text-[10px] text-red-500 font-medium">Heute</span>
+              <span className="absolute -top-5 -translate-x-1/2 text-[10px] text-accent font-medium">Heute</span>
             </div>
           )}
 
@@ -83,14 +86,14 @@ export default function CampaignTimeline({ campaigns }: Props) {
             const isHovered = hover === c.id
 
             return (
-              <div key={c.id} className="relative h-8 flex items-center">
+              <div key={c.id} className="relative h-9 flex items-center">
                 <div
-                  className="absolute h-6 rounded-md cursor-pointer transition-opacity"
+                  className="absolute h-7 rounded-lg cursor-pointer transition-all"
                   style={{
                     left: `${leftPct}%`,
                     width: `${Math.max(widthPct, 1)}%`,
                     backgroundColor: getColor(c.status),
-                    opacity: isHovered ? 1 : 0.85,
+                    opacity: isHovered ? 1 : 0.8,
                   }}
                   onMouseEnter={() => setHover(c.id)}
                   onMouseLeave={() => setHover(null)}
@@ -99,11 +102,10 @@ export default function CampaignTimeline({ campaigns }: Props) {
                     {c.jobtitel}
                   </span>
 
-                  {/* Tooltip */}
                   {isHovered && (
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 whitespace-nowrap z-20 shadow-lg">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-navy text-white text-xs rounded-xl px-3 py-2 whitespace-nowrap z-20 shadow-lg">
                       <p className="font-semibold">{c.jobtitel}</p>
-                      <p>{formatDate(c.start_date)} – {formatDate(c.end_date)}</p>
+                      <p className="text-navy-muted">{formatDate(c.start_date)} – {formatDate(c.end_date)}</p>
                       <p>{daysLeft > 0 ? `${daysLeft} Tage verbleibend` : 'Abgelaufen'}</p>
                     </div>
                   )}

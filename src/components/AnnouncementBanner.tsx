@@ -29,9 +29,11 @@ export default function AnnouncementBanner() {
   if (!ann) return null
 
   return (
-    <div className="rounded-xl bg-accent/10 border border-accent/20 p-4 flex items-start gap-3">
-      <Megaphone size={20} className="text-accent mt-0.5 shrink-0" />
-      <p className="text-sm text-gray-800">{ann.message}</p>
+    <div className="rounded-2xl bg-kpi-blue p-5 flex items-start gap-3 shadow-sm">
+      <div className="w-9 h-9 rounded-xl bg-blue-200/60 flex items-center justify-center shrink-0">
+        <Megaphone size={18} className="text-accent" />
+      </div>
+      <p className="text-sm text-gray-800 pt-1.5">{ann.message}</p>
     </div>
   )
 }

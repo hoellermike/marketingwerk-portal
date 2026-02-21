@@ -1,5 +1,5 @@
 import { useAuth } from '../contexts/AuthContext'
-import { FolderOpen, Hash, LayoutList, CalendarClock, PlusCircle, FileText, PenLine } from 'lucide-react'
+import { FolderOpen, Hash, LayoutList, CalendarClock, PlusCircle, FileText, PenLine, Link } from 'lucide-react'
 import AccountTeam from '../components/AccountTeam'
 
 export default function Resources() {
@@ -21,9 +21,17 @@ export default function Resources() {
 
   return (
     <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Ressourcen</h1>
+        <p className="text-sm text-gray-500 mt-1">Alle Links, Tools und Formulare an einem Ort.</p>
+      </div>
+
       {tools.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Links & Tools</h2>
+          <div className="flex items-center gap-2 mb-3">
+            <Link size={18} className="text-accent" />
+            <h2 className="text-lg font-semibold text-gray-900">Links & Tools</h2>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {tools.map(t => (
               <a
@@ -31,14 +39,14 @@ export default function Resources() {
                 href={t.url!}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 hover:border-accent/40 hover:shadow-sm transition-all"
+                className="flex items-center gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
               >
-                <div className="p-2 rounded-lg bg-accent/10 text-accent">
+                <div className="p-2 rounded-xl bg-kpi-blue text-accent">
                   <t.icon size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">{t.title}</p>
-                  <p className="text-xs text-gray-500">{t.desc}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t.desc}</p>
                 </div>
               </a>
             ))}
@@ -48,7 +56,10 @@ export default function Resources() {
 
       {forms.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Formulare</h2>
+          <div className="flex items-center gap-2 mb-3">
+            <FileText size={18} className="text-accent" />
+            <h2 className="text-lg font-semibold text-gray-900">Formulare</h2>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {forms.map(f => (
               <a
@@ -56,14 +67,14 @@ export default function Resources() {
                 href={f.url!}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 hover:border-accent/40 hover:shadow-sm transition-all"
+                className="flex items-center gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
               >
-                <div className="p-2 rounded-lg bg-accent/10 text-accent">
+                <div className="p-2 rounded-xl bg-kpi-purple text-purple-600">
                   <f.icon size={20} />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">{f.title}</p>
-                  <p className="text-xs text-gray-500">{f.desc}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{f.desc}</p>
                 </div>
               </a>
             ))}

@@ -59,14 +59,19 @@ export default function Campaigns() {
 
   return (
     <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Kampagnen</h1>
+        <p className="text-sm text-gray-500 mt-1">Übersicht aller laufenden und vergangenen Kampagnen.</p>
+      </div>
+
       {campaigns.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-2xl border border-card-border shadow-sm p-6">
           <LeadFunnel {...totals} />
         </div>
       )}
 
       {campaigns.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-white rounded-2xl border border-card-border shadow-sm p-6">
           <CampaignTimeline campaigns={campaigns} />
         </div>
       )}

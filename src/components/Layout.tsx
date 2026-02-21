@@ -1,89 +1,128 @@
+import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { LogOut, Hash } from 'lucide-react'
+import { LogOut, LayoutDashboard, Megaphone, CreditCard, FolderOpen, Menu, X } from 'lucide-react'
 
 const LOGO_URL = 'https://raw.githubusercontent.com/hoellermike/marketingwerk-portal/refs/heads/main/med_alt2%402x.png'
 
-const tabs = [
-  { key: 'overview', label: 'Übersicht' },
-  { key: 'campaigns', label: 'Kampagnen' },
-  { key: 'credits', label: 'Credits & Abrechnung' },
-  { key: 'resources', label: 'Ressourcen' },
+const navItems = [
+  { key: 'overview', label: 'Dashboard', icon: LayoutDashboard },
+  { key: 'campaigns', label: 'Kampagnen', icon: Megaphone },
+  { key: 'credits', label: 'Credits', icon: CreditCard },
+  { key: 'resources', label: 'Ressourcen', icon: FolderOpen },
 ] as const
 
-export type TabKey = (typeof tabs)[number]['key']
+export type TabKey = (typeof navItems)[number]['key']
 
 interface Props {
   children: (activeTab: TabKey) => React.ReactNode
 }
 
 export default function Layout({ children }: Props) {
-  const { user, client, signOut } = useAuth()
+  const { user, signOut } = useAuth()
   const [searchParams, setSearchParams] = useSearchParams()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const activeTab = (searchParams.get('tab') as TabKey) || 'overview'
 
-  const setTab = (tab: TabKey) => setSearchParams({ tab })
+  const setTab = (tab: TabKey) => {
+    setSearchParams({ tab })
+    setSidebarOpen(false)
+  }
+
   const initial = user?.email?.[0]?.toUpperCase() || '?'
+  const email = user?.email || ''
 
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Top Bar */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src={LOGO_URL} alt="marketingwerk" className="h-8" />
-            <span className="text-sm font-medium text-gray-400 hidden sm:block">Client Portal</span>
-          </div>
-          <div className="flex items-center gap-3">
-            {client?.slack_channel_url && (
-              <a
-                href={client.slack_channel_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-accent transition-colors"
-                title="Slack öffnen"
-              >
-                <Hash size={18} />
-              </a>
-            )}
-            <div className="w-8 h-8 rounded-full bg-navy text-white flex items-center justify-center text-xs font-bold">
-              {initial}
-            </div>
-            <button onClick={signOut} className="text-gray-400 hover:text-red-500 transition-colors" title="Abmelden">
-              <LogOut size={18} />
-            </button>
-          </div>
-        </div>
+  const sidebarContent = (
+    <div className="flex flex-col h-full">
+      {/* Logo */}
+      <div className="px-5 py-5">
+        <img src={LOGO_URL} alt="marketingwerk" className="h-8 brightness-0 invert" />
+      </div>
 
-        {/* Tabs */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <nav className="flex gap-1 -mb-px overflow-x-auto">
-            {tabs.map(t => (
+      {/* Navigation */}
+      <div className="px-3 mt-4">
+        <p className="px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-navy-muted">Navigation</p>
+        <nav className="space-y-1">
+          {navItems.map(item => {
+            const isActive = activeTab === item.key
+            return (
               <button
-                key={t.key}
-                onClick={() => setTab(t.key)}
-                className={`px-4 py-2.5 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
-                  activeTab === t.key
-                    ? 'border-accent text-accent'
-                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                key={item.key}
+                onClick={() => setTab(item.key)}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  isActive
+                    ? 'bg-navy-light text-white'
+                    : 'text-navy-muted hover:bg-navy-light/50 hover:text-white'
                 }`}
               >
-                {t.label}
+                <item.icon size={18} />
+                {item.label}
               </button>
-            ))}
-          </nav>
+            )
+          })}
+        </nav>
+      </div>
+
+      {/* Spacer */}
+      <div className="flex-1" />
+
+      {/* User section */}
+      <div className="px-3 pb-5">
+        <div className="flex items-center gap-3 px-3 py-3 rounded-lg">
+          <div className="w-8 h-8 rounded-full bg-navy-light text-white flex items-center justify-center text-xs font-bold shrink-0">
+            {initial}
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-white truncate">{email}</p>
+          </div>
+          <button onClick={signOut} className="text-navy-muted hover:text-red-400 transition-colors shrink-0" title="Abmelden">
+            <LogOut size={16} />
+          </button>
         </div>
-      </header>
+      </div>
+    </div>
+  )
 
-      {/* Content */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6">
-        {children(activeTab)}
-      </main>
+  return (
+    <div className="min-h-screen bg-content-bg flex">
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex w-[250px] shrink-0 bg-navy flex-col fixed inset-y-0 left-0 z-40">
+        {sidebarContent}
+      </aside>
 
-      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white py-4 text-center text-xs text-gray-400">
-        © 2026 marketingwerk · <a href="mailto:office@marketingwerk.at" className="hover:text-accent">office@marketingwerk.at</a>
-      </footer>
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          <aside className="absolute inset-y-0 left-0 w-[250px] bg-navy flex flex-col">
+            <button onClick={() => setSidebarOpen(false)} className="absolute top-4 right-4 text-navy-muted hover:text-white">
+              <X size={20} />
+            </button>
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+
+      {/* Main content */}
+      <div className="flex-1 lg:ml-[250px] flex flex-col min-h-screen">
+        {/* Mobile header */}
+        <header className="lg:hidden bg-white border-b border-card-border px-4 h-14 flex items-center gap-3 sticky top-0 z-30">
+          <button onClick={() => setSidebarOpen(true)} className="text-gray-600">
+            <Menu size={22} />
+          </button>
+          <img src={LOGO_URL} alt="marketingwerk" className="h-7" />
+        </header>
+
+        {/* Content */}
+        <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-8 py-8">
+          {children(activeTab)}
+        </main>
+
+        {/* Footer */}
+        <footer className="border-t border-card-border bg-white py-4 text-center text-xs text-gray-400">
+          © 2026 marketingwerk · <a href="mailto:office@marketingwerk.at" className="hover:text-accent">office@marketingwerk.at</a>
+        </footer>
+      </div>
     </div>
   )
 }

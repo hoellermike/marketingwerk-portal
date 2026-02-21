@@ -1,5 +1,5 @@
 import { useAuth } from '../contexts/AuthContext'
-import { PlusCircle, FileText, CreditCard, Upload, Headphones, CalendarClock } from 'lucide-react'
+import { PlusCircle, FileText, CreditCard, Upload, Headphones, CalendarClock, Zap } from 'lucide-react'
 
 const actions = [
   { key: 'campaign_request_url', icon: PlusCircle, title: 'Neue Kampagne', desc: 'Kampagnen-Anfrage starten' },
@@ -19,7 +19,10 @@ export default function QuickActions() {
 
   return (
     <div>
-      <h2 className="text-lg font-semibold text-gray-900 mb-3">Quick Actions</h2>
+      <div className="flex items-center gap-2 mb-3">
+        <Zap size={18} className="text-accent" />
+        <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {visible.map(a => (
           <a
@@ -27,14 +30,14 @@ export default function QuickActions() {
             href={(client as any)[a.key]}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-start gap-3 rounded-xl border border-gray-200 bg-white p-4 hover:border-accent/40 hover:shadow-sm transition-all"
+            className="flex items-start gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
           >
-            <div className="p-2 rounded-lg bg-accent/10 text-accent">
+            <div className="p-2 rounded-xl bg-kpi-blue text-accent">
               <a.icon size={20} />
             </div>
             <div>
               <p className="text-sm font-medium text-gray-900">{a.title}</p>
-              <p className="text-xs text-gray-500">{a.desc}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{a.desc}</p>
             </div>
           </a>
         ))}

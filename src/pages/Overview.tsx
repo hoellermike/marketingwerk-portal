@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { Briefcase, Users, Star, Euro, CreditCard, Eye } from 'lucide-react'
+import { Briefcase, Users, Star, Euro, CreditCard, Eye, Info } from 'lucide-react'
 import { formatCurrency, formatNumber, formatDate, daysRemaining } from '../lib/format'
 import KPICard from '../components/KPICard'
 import AnnouncementBanner from '../components/AnnouncementBanner'
@@ -35,16 +35,22 @@ export default function Overview() {
 
   return (
     <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-500 mt-1">Tracking ongoing activities and campaign performance.</p>
+      </div>
+
       <AnnouncementBanner />
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
-        <KPICard label="Aktive Kampagnen" value={String(active.length)} icon={Briefcase} />
-        <KPICard label="Bewerbungen" value={formatNumber(totalLeads)} icon={Users} />
-        <KPICard label="Qualifizierte Leads" value={formatNumber(totalQualified)} icon={Star} highlighted />
-        <KPICard label="Gesamtausgaben" value={formatCurrency(totalSpend)} icon={Euro} />
-        <KPICard label="Reichweite" value={formatNumber(totalReach)} icon={Eye} />
-        <KPICard label="Credits verfügbar" value={formatNumber(client.credits_available)} icon={CreditCard} highlighted />
+        <KPICard label="Aktive Kampagnen" value={String(active.length)} icon={Briefcase} tint="blue" />
+        <KPICard label="Bewerbungen" value={formatNumber(totalLeads)} icon={Users} tint="mint" />
+        <KPICard label="Qualifizierte Leads" value={formatNumber(totalQualified)} icon={Star} tint="gold" />
+        <KPICard label="Gesamtausgaben" value={formatCurrency(totalSpend)} icon={Euro} tint="peach" />
+        <KPICard label="Reichweite" value={formatNumber(totalReach)} icon={Eye} tint="purple" />
+        <KPICard label="Credits verfügbar" value={formatNumber(client.credits_available)} icon={CreditCard} tint="gold" />
       </div>
 
       <QuickActions />
@@ -54,22 +60,38 @@ export default function Overview() {
       {/* Kampagnen-Schnellansicht */}
       {campaigns.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Kampagnen</h2>
-          <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
-            {campaigns.map(c => {
-              const days = daysRemaining(c.end_date)
-              return (
-                <div key={c.id} className="flex items-center gap-3 px-4 py-3">
-                  <span className="text-sm font-medium text-gray-900 flex-1 min-w-0 truncate">{c.jobtitel}</span>
-                  <StatusBadge status={c.status} />
-                  <span className="text-xs text-gray-500 w-20 text-right">{formatNumber(c.total_leads)} Bew.</span>
-                  <span className="text-xs font-medium text-gold w-16 text-right">{formatNumber(c.qualified_leads)} Qual.</span>
-                  {days !== null && days > 0 && (
-                    <span className="text-xs text-gray-400 w-20 text-right">{days} Tage</span>
-                  )}
-                </div>
-              )
-            })}
+          <div className="flex items-center gap-2 mb-3">
+            <Briefcase size={18} className="text-accent" />
+            <h2 className="text-lg font-semibold text-gray-900">Kampagnen</h2>
+          </div>
+          <div className="bg-white rounded-2xl border border-card-border shadow-sm overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-card-border text-left text-xs text-gray-500">
+                  <th className="px-5 py-3.5 font-medium">Kampagne</th>
+                  <th className="px-5 py-3.5 font-medium">Status</th>
+                  <th className="px-5 py-3.5 font-medium text-right">Bewerbungen</th>
+                  <th className="px-5 py-3.5 font-medium text-right">Qualifiziert</th>
+                  <th className="px-5 py-3.5 font-medium text-right hidden sm:table-cell">Verbleibend</th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.map(c => {
+                  const days = daysRemaining(c.end_date)
+                  return (
+                    <tr key={c.id} className="hover:bg-content-bg/50 transition-colors">
+                      <td className="px-5 py-3.5 font-medium text-gray-900 truncate max-w-[200px]">{c.jobtitel}</td>
+                      <td className="px-5 py-3.5"><StatusBadge status={c.status} /></td>
+                      <td className="px-5 py-3.5 text-right text-gray-600">{formatNumber(c.total_leads)}</td>
+                      <td className="px-5 py-3.5 text-right font-medium text-amber-600">{formatNumber(c.qualified_leads)}</td>
+                      <td className="px-5 py-3.5 text-right text-gray-400 hidden sm:table-cell">
+                        {days !== null && days > 0 ? `${days} Tage` : '–'}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
@@ -77,8 +99,11 @@ export default function Overview() {
       {/* Account Info + Team */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-3">Account-Info</h3>
-          <div className="bg-white rounded-xl border border-gray-200 p-4 space-y-2 text-sm">
+          <div className="flex items-center gap-2 mb-3">
+            <Info size={18} className="text-accent" />
+            <h3 className="text-lg font-semibold text-gray-900">Account-Info</h3>
+          </div>
+          <div className="bg-white rounded-2xl border border-card-border shadow-sm p-6 space-y-3 text-sm">
             <Row label="Account Manager" value={client.account_owner} />
             <Row label="Status" value={client.status} />
             {client.branche && <Row label="Branche" value={client.branche} />}

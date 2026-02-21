@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../contexts/AuthContext'
-import { Mail } from 'lucide-react'
+import { Mail, Users } from 'lucide-react'
 
 interface Contact {
   id: string
@@ -29,21 +29,24 @@ export default function AccountTeam() {
 
   return (
     <div>
-      <h3 className="text-lg font-semibold text-gray-900 mb-3">Account-Team</h3>
+      <div className="flex items-center gap-2 mb-3">
+        <Users size={18} className="text-accent" />
+        <h3 className="text-lg font-semibold text-gray-900">Account-Team</h3>
+      </div>
       <div className="space-y-3">
         {contacts.map(c => {
           const initials = c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
           return (
-            <div key={c.id} className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-4">
-              <div className="w-10 h-10 rounded-full bg-accent/10 text-accent flex items-center justify-center text-sm font-bold shrink-0">
+            <div key={c.id} className="flex items-center gap-3 rounded-2xl border border-card-border bg-white p-5 shadow-sm">
+              <div className="w-10 h-10 rounded-full bg-kpi-blue text-accent flex items-center justify-center text-sm font-bold shrink-0">
                 {initials}
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-gray-900">{c.name}</p>
-                {c.role && <p className="text-xs text-gray-500">{c.role}</p>}
+                {c.role && <p className="text-xs text-gray-500 mt-0.5">{c.role}</p>}
               </div>
               {c.email && (
-                <a href={`mailto:${c.email}`} className="text-gray-400 hover:text-accent">
+                <a href={`mailto:${c.email}`} className="text-gray-400 hover:text-accent transition-colors">
                   <Mail size={16} />
                 </a>
               )}
