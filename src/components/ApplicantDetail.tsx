@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
-import { X, Star, Phone, Mail, MapPin, FileText, Download, Briefcase, GraduationCap, Calendar, Euro, Languages, Link2 } from 'lucide-react'
+import { X, Star, Phone, Mail, MapPin, FileText, Download, Briefcase, GraduationCap, Calendar, Euro, Languages, Link2, ChevronDown } from 'lucide-react'
 import { mapStatus } from '../lib/statusMap'
 import { formatDate } from '../lib/format'
 import { supabase } from '../lib/supabase'
+import { useToast } from '../contexts/ToastContext'
 import ApplicantFeedback from './ApplicantFeedback'
 import ApplicantTimeline from './ApplicantTimeline'
+import RejectionDialog from './RejectionDialog'
 
 export interface ApplicationDetail {
   id: string
@@ -57,11 +59,34 @@ interface Props {
 const tabs = ['Profil', 'Dokumente', 'Feedback', 'Verlauf'] as const
 type Tab = typeof tabs[number]
 
+// Allowed status transitions
+const statusTransitions: Record<string, string[]> = {
+  'Vorgestellt': ['Interview terminiert', 'Nicht passend'],
+  'Interview terminiert': ['Angebot', 'Nicht passend'],
+  'Angebot': ['Eingestellt', 'Nicht passend'],
+}
+
 export default function ApplicantDetail({ application: app, onClose, onUpdate, onReject }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('Profil')
   const [duplicates, setDuplicates] = useState<{ id: string; vorname: string | null; status: string; jobtitel: string; bewerbungsdatum: string }[]>([])
+  const [showStatusDropdown, setShowStatusDropdown] = useState(false)
+  const [showRejectionDialog, setShowRejectionDialog] = useState(false)
+  const { showToast } = useToast()
   const status = mapStatus(app.status)
   const name = `${app.vorname || 'Bewerber'}${app.nachname_initial ? ` ${app.nachname_initial}.` : ''}`
+
+  const allowedTransitions = statusTransitions[app.status] || []
+
+  const handleStatusChange = async (newStatus: string) => {
+    setShowStatusDropdown(false)
+    if (newStatus === 'Nicht passend') {
+      setShowRejectionDialog(true)
+      return
+    }
+    await supabase.from('applications').update({ status: newStatus }).eq('id', app.id)
+    showToast(`Status von ${name} auf '${mapStatus(newStatus).label}' geändert`)
+    onUpdate()
+  }
 
   // Load duplicate info
   useEffect(() => {
@@ -91,7 +116,7 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate, o
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/30 z-40" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
       {/* Panel */}
       <div className="fixed inset-y-0 right-0 w-full max-w-[520px] bg-white z-50 shadow-2xl flex flex-col animate-slide-in">
@@ -101,10 +126,33 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate, o
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-lg font-bold text-gray-900">{name}</h2>
-                <span className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${status.bg}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
-                  {status.label}
-                </span>
+                <div className="relative">
+                  <button
+                    onClick={() => allowedTransitions.length > 0 && setShowStatusDropdown(!showStatusDropdown)}
+                    className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-0.5 rounded-full ${status.bg} ${allowedTransitions.length > 0 ? 'cursor-pointer hover:opacity-80' : ''}`}
+                  >
+                    <span className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
+                    {status.label}
+                    {allowedTransitions.length > 0 && <ChevronDown size={12} />}
+                  </button>
+                  {showStatusDropdown && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setShowStatusDropdown(false)} />
+                      <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-xl shadow-lg z-20 py-1 min-w-[180px]">
+                        {allowedTransitions.map(s => {
+                          const ms = mapStatus(s)
+                          return (
+                            <button key={s} onClick={() => handleStatusChange(s)}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2">
+                              <span className={`w-2 h-2 rounded-full ${ms.dot}`} />
+                              {ms.label}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                 {app.job_campaigns?.jobtitel && (
@@ -200,6 +248,14 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate, o
           {activeTab === 'Verlauf' && <ApplicantTimeline applicationId={app.id} />}
         </div>
       </div>
+
+      {showRejectionDialog && (
+        <RejectionDialog
+          applicant={app}
+          onClose={() => setShowRejectionDialog(false)}
+          onDone={() => { setShowRejectionDialog(false); onUpdate() }}
+        />
+      )}
     </>
   )
 }

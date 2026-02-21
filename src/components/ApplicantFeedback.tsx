@@ -1,10 +1,13 @@
 import { useState } from 'react'
 import { Star, Check, Clock } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { useToast } from '../contexts/ToastContext'
 import { formatDate } from '../lib/format'
 
 interface Application {
   id: string
+  vorname?: string | null
+  nachname_initial?: string | null
   status: string
   kunden_interesse: string | null
   kunden_rating: number | null
@@ -29,6 +32,7 @@ const schrittOptions = [
 export default function ApplicantFeedback({ application, onFeedbackSaved }: Props) {
   const hasFeedback = !!application.feedback_datum
   const isVorgestellt = application.status === 'Vorgestellt'
+  const { showToast } = useToast()
 
   const [interesse, setInteresse] = useState<string>(application.kunden_interesse || '')
   const [rating, setRating] = useState<number>(application.kunden_rating || 0)
@@ -37,6 +41,9 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
   const [schritt, setSchritt] = useState<string>(application.naechster_schritt || '')
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [postPrompt, setPostPrompt] = useState<'invite' | 'reject' | null>(null)
+
+  const appName = `${application.vorname || 'Bewerber'}${application.nachname_initial ? ` ${application.nachname_initial}.` : ''}`
 
   // Not yet presented — show waiting message
   if (!isVorgestellt && !hasFeedback) {
@@ -98,8 +105,39 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
     setSaving(false)
     if (!error) {
       setSaved(true)
-      onFeedbackSaved()
+      // Show post-feedback prompt based on interesse and current status
+      if (interesse === 'Ja' && isVorgestellt) {
+        setPostPrompt('invite')
+      } else if (interesse === 'Nein') {
+        setPostPrompt('reject')
+      } else {
+        onFeedbackSaved()
+      }
     }
+  }
+
+  async function handleInviteToInterview() {
+    await supabase.from('applications').update({ status: 'Interview terminiert' }).eq('id', application.id)
+    showToast(`Status von ${appName} auf 'Interview' geändert`)
+    setPostPrompt(null)
+    onFeedbackSaved()
+  }
+
+  async function handleReject() {
+    await supabase.from('applications').update({ status: 'Nicht passend' }).eq('id', application.id)
+    showToast(`${appName} wurde als "Nicht passend" markiert`)
+    setPostPrompt(null)
+    onFeedbackSaved()
+  }
+
+  async function handleMoveToPool() {
+    await supabase.from('applications').update({
+      is_talent_pool: true,
+      talent_pool_date: new Date().toISOString(),
+    }).eq('id', application.id)
+    showToast(`${appName} wurde in den Talent Pool verschoben`)
+    setPostPrompt(null)
+    onFeedbackSaved()
   }
 
   return (
@@ -185,6 +223,37 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
       >
         {saving ? 'Wird gespeichert…' : 'Feedback absenden'}
       </button>
+
+      {postPrompt === 'invite' && (
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
+          <p className="text-sm text-blue-800">Möchten Sie {appName} zum Interview einladen?</p>
+          <div className="flex gap-2">
+            <button onClick={handleInviteToInterview} className="text-xs font-medium bg-[#3572E8] text-white px-3 py-1.5 rounded-lg hover:bg-[#2860d0] transition-colors">
+              Ja, Status auf &apos;Interview&apos; setzen
+            </button>
+            <button onClick={() => { setPostPrompt(null); onFeedbackSaved() }} className="text-xs font-medium border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+              Nein, nur Feedback speichern
+            </button>
+          </div>
+        </div>
+      )}
+
+      {postPrompt === 'reject' && (
+        <div className="bg-red-50 border border-red-100 rounded-xl p-4 space-y-3">
+          <p className="text-sm text-red-800">Möchten Sie {appName} absagen?</p>
+          <div className="flex gap-2 flex-wrap">
+            <button onClick={handleReject} className="text-xs font-medium bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-colors">
+              Absagen
+            </button>
+            <button onClick={handleMoveToPool} className="text-xs font-medium bg-[#3572E8] text-white px-3 py-1.5 rounded-lg hover:bg-[#2860d0] transition-colors">
+              In Talent Pool
+            </button>
+            <button onClick={() => { setPostPrompt(null); onFeedbackSaved() }} className="text-xs font-medium border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
+              Nur Feedback speichern
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -6,6 +6,8 @@ import { supabase } from '../lib/supabase'
 interface BriefingWizardProps {
   onClose: () => void
   pastCampaigns?: { id: string; jobtitel: string }[]
+  draftId?: string
+  prefill?: Partial<BriefingData>
 }
 
 interface BriefingData {

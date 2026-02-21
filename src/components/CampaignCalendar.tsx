@@ -50,7 +50,7 @@ function PlanModal({ onClose, onSave }: { onClose: () => void; onSave: (d: { job
   const [notiz, setNotiz] = useState('')
   const inputCls = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3572E8]/20 focus:border-[#3572E8]"
   return (
-    <div className="fixed inset-0 z-50 bg-black/30 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
       <div className="bg-white rounded-xl border border-gray-100 p-6 w-full max-w-md">
         <div className="flex justify-between items-center mb-4">
           <h3 className="font-semibold text-gray-900">Kampagne planen</h3>

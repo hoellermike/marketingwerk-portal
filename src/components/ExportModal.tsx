@@ -14,7 +14,7 @@ export default function ExportModal({ onClose, onExport, showPrivacy = false, ti
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/30 z-50" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/50 z-50" onClick={onClose} />
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-xl border border-gray-100 shadow-xl w-full max-w-sm p-6">
           <div className="flex items-center justify-between mb-5">

@@ -26,9 +26,10 @@ function relativeTime(dateStr: string): string {
 
 interface Props {
   onNavigate?: (tab: string) => void
+  variant?: 'dark' | 'light'
 }
 
-export default function NotificationBell({ onNavigate }: Props) {
+export default function NotificationBell({ onNavigate, variant = 'dark' }: Props) {
   const { client } = useAuth()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [open, setOpen] = useState(false)
@@ -70,7 +71,11 @@ export default function NotificationBell({ onNavigate }: Props) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="relative p-2 rounded-lg text-navy-muted hover:bg-navy-light/50 hover:text-white transition-colors"
+        className={`relative p-2 rounded-lg transition-colors ${
+          variant === 'light'
+            ? 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+            : 'text-navy-muted hover:bg-navy-light/50 hover:text-white'
+        }`}
       >
         <Bell size={18} />
         {unreadCount > 0 && (

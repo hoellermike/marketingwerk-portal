@@ -53,10 +53,10 @@ export default function Layout({ children }: Props) {
               <button
                 key={item.key}
                 onClick={() => setTab(item.key)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'bg-navy-light text-white'
-                    : 'text-navy-muted hover:bg-navy-light/50 hover:text-white'
+                    ? 'bg-navy-light/60 text-white border-l-2 border-[#3572E8] rounded-r-lg'
+                    : 'text-navy-muted hover:bg-navy-light/30 hover:text-white rounded-lg'
                 }`}
               >
                 <item.icon size={18} />
@@ -69,11 +69,6 @@ export default function Layout({ children }: Props) {
 
       {/* Spacer */}
       <div className="flex-1" />
-
-      {/* Notification Bell */}
-      <div className="px-3 pb-2">
-        <NotificationBell onNavigate={(tab) => setTab(tab as TabKey)} />
-      </div>
 
       {/* Settings link */}
       <div className="px-3 pb-2">
@@ -128,6 +123,14 @@ export default function Layout({ children }: Props) {
             <Menu size={22} />
           </button>
           <img src={LOGO_URL} alt="marketingwerk" className="h-7" />
+          <div className="ml-auto">
+            <NotificationBell onNavigate={(tab) => setTab(tab as TabKey)} variant="light" />
+          </div>
+        </header>
+
+        {/* Desktop header */}
+        <header className="hidden lg:flex bg-white border-b border-gray-100 px-8 h-14 items-center justify-end sticky top-0 z-30">
+          <NotificationBell onNavigate={(tab) => setTab(tab as TabKey)} variant="light" />
         </header>
 
         {/* Content */}
