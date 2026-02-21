@@ -7,13 +7,14 @@ interface Props {
   applicant: { id: string; vorname: string | null; nachname_initial: string | null; status: string }
   onClose: () => void
   onDone: () => void
+  defaultChoice?: 'reject' | 'pool'
 }
 
-const tagOptions = ['Gastronomie', 'Service', 'Pflege', 'Handwerk', 'Büro', 'Technik']
+const tagOptions = ['Gastronomie', 'Service', 'Pflege', 'Handwerk', 'Büro', 'Technik', 'Erfahren', 'Junior', 'Senior', 'Umzugsbereit']
 
-export default function RejectionDialog({ applicant, onClose, onDone }: Props) {
+export default function RejectionDialog({ applicant, onClose, onDone, defaultChoice = 'pool' }: Props) {
   const { showToast } = useToast()
-  const [choice, setChoice] = useState<'reject' | 'pool'>('pool')
+  const [choice, setChoice] = useState<'reject' | 'pool'>(defaultChoice)
   const [reason, setReason] = useState('')
   const [tags, setTags] = useState<string[]>([])
   const [verfuegbarAb, setVerfuegbarAb] = useState('')
@@ -28,6 +29,7 @@ export default function RejectionDialog({ applicant, onClose, onDone }: Props) {
     setSaving(true)
     if (choice === 'pool') {
       await supabase.from('applications').update({
+        status: 'Nicht passend',
         is_talent_pool: true,
         talent_pool_date: new Date().toISOString(),
         talent_pool_reason: reason || null,
@@ -74,15 +76,15 @@ export default function RejectionDialog({ applicant, onClose, onDone }: Props) {
                 <label className="block text-xs font-medium text-gray-600 mb-1">Grund</label>
                 <textarea value={reason} onChange={e => setReason(e.target.value)} rows={2}
                   className="w-full text-sm rounded-xl border border-gray-100 p-3 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-[#3572E8]/30 focus:border-[#3572E8]"
-                  placeholder="Warum in den Pool?" />
+                  placeholder="Warum soll dieser Kandidat im Pool bleiben?" />
               </div>
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1">Tags</label>
                 <div className="flex flex-wrap gap-1.5">
                   {tagOptions.map(tag => (
                     <button key={tag} type="button" onClick={() => toggleTag(tag)}
-                      className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
-                        tags.includes(tag) ? 'bg-[#3572E8] text-white border-[#3572E8]' : 'border-gray-200 text-gray-500 hover:bg-gray-50'
+                      className={`text-xs px-3 py-1.5 rounded-full transition-colors ${
+                        tags.includes(tag) ? 'bg-[#3572E8] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}>
                       {tag}
                     </button>
@@ -103,9 +105,9 @@ export default function RejectionDialog({ applicant, onClose, onDone }: Props) {
               <span className="text-sm text-gray-700">Absage-E-Mail an den Bewerber senden <span className="text-gray-400">(Vorlage: &quot;Absage freundlich&quot;)</span></span>
             </label>
             {sendEmail && (
-              <button type="button" onClick={() => showToast('Vorschau-Funktion wird in Kürze verfügbar', 'info')}
+              <button type="button" onClick={() => showToast('E-Mail-Vorschau wird in einer zukünftigen Version verfügbar', 'info')}
                 className="ml-6 mt-1 text-xs text-[#3572E8] hover:underline">
-                Vorschau ansehen
+                  Vorschau ansehen
               </button>
             )}
           </div>

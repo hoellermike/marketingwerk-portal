@@ -3,6 +3,7 @@ import { Star, Check, Clock } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import { useToast } from '../contexts/ToastContext'
 import { formatDate } from '../lib/format'
+import RejectionDialog from './RejectionDialog'
 
 interface Application {
   id: string
@@ -42,6 +43,8 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [postPrompt, setPostPrompt] = useState<'invite' | 'reject' | null>(null)
+  const [showRejectionDialog, setShowRejectionDialog] = useState(false)
+  const [rejectionDefault, setRejectionDefault] = useState<'reject' | 'pool'>('reject')
 
   const appName = `${application.vorname || 'Bewerber'}${application.nachname_initial ? ` ${application.nachname_initial}.` : ''}`
 
@@ -123,21 +126,16 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
     onFeedbackSaved()
   }
 
-  async function handleReject() {
-    await supabase.from('applications').update({ status: 'Nicht passend' }).eq('id', application.id)
-    showToast(`${appName} wurde als "Nicht passend" markiert`)
+  function handleReject() {
+    setRejectionDefault('reject')
+    setShowRejectionDialog(true)
     setPostPrompt(null)
-    onFeedbackSaved()
   }
 
-  async function handleMoveToPool() {
-    await supabase.from('applications').update({
-      is_talent_pool: true,
-      talent_pool_date: new Date().toISOString(),
-    }).eq('id', application.id)
-    showToast(`${appName} wurde in den Talent Pool verschoben`)
+  function handleMoveToPool() {
+    setRejectionDefault('pool')
+    setShowRejectionDialog(true)
     setPostPrompt(null)
-    onFeedbackSaved()
   }
 
   return (
@@ -226,13 +224,15 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
 
       {postPrompt === 'invite' && (
         <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
-          <p className="text-sm text-blue-800">Möchten Sie {appName} zum Interview einladen?</p>
+          <p className="text-sm text-blue-800">
+            ✅ Feedback gespeichert! Möchten Sie {appName} zum Interview einladen?
+          </p>
           <div className="flex gap-2">
             <button onClick={handleInviteToInterview} className="text-xs font-medium bg-[#3572E8] text-white px-3 py-1.5 rounded-lg hover:bg-[#2860d0] transition-colors">
-              Ja, Status auf &apos;Interview&apos; setzen
+              Ja, Interview einladen
             </button>
             <button onClick={() => { setPostPrompt(null); onFeedbackSaved() }} className="text-xs font-medium border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
-              Nein, nur Feedback speichern
+              Nein danke
             </button>
           </div>
         </div>
@@ -240,7 +240,9 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
 
       {postPrompt === 'reject' && (
         <div className="bg-red-50 border border-red-100 rounded-xl p-4 space-y-3">
-          <p className="text-sm text-red-800">Möchten Sie {appName} absagen?</p>
+          <p className="text-sm text-red-800">
+            ✅ Feedback gespeichert! Wie möchten Sie mit {appName} verfahren?
+          </p>
           <div className="flex gap-2 flex-wrap">
             <button onClick={handleReject} className="text-xs font-medium bg-red-500 text-white px-3 py-1.5 rounded-lg hover:bg-red-600 transition-colors">
               Absagen
@@ -249,10 +251,19 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
               In Talent Pool
             </button>
             <button onClick={() => { setPostPrompt(null); onFeedbackSaved() }} className="text-xs font-medium border border-gray-200 text-gray-700 px-3 py-1.5 rounded-lg hover:bg-gray-50 transition-colors">
-              Nur Feedback speichern
+              Nichts weiter
             </button>
           </div>
         </div>
+      )}
+
+      {showRejectionDialog && (
+        <RejectionDialog
+          applicant={application}
+          defaultChoice={rejectionDefault}
+          onClose={() => setShowRejectionDialog(false)}
+          onDone={() => { setShowRejectionDialog(false); onFeedbackSaved() }}
+        />
       )}
     </div>
   )
