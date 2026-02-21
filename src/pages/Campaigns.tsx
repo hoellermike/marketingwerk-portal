@@ -34,9 +34,12 @@ export default function Campaigns() {
 
   if (campaigns.length === 0) {
     return (
-      <div className="max-w-6xl mx-auto text-center py-20">
-        <Megaphone size={48} className="mx-auto text-gray-300 mb-4" />
-        <p className="text-gray-500">Noch keine Kampagnen vorhanden</p>
+      <div className="max-w-md mx-auto text-center py-20">
+        <div className="mx-auto w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center mb-5">
+          <Megaphone size={28} className="text-accent" />
+        </div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">Noch keine Kampagnen</h2>
+        <p className="text-gray-500 text-sm">Sobald deine Kampagnen eingerichtet sind, findest du hier alle Details, Status-Updates und Kanäle auf einen Blick.</p>
       </div>
     )
   }

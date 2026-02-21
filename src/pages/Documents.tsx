@@ -58,9 +58,12 @@ export default function Documents() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="text-center py-20">
-          <FileText size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">Keine Dokumente vorhanden</p>
+        <div className="max-w-md mx-auto text-center py-20">
+          <div className="mx-auto w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center mb-5">
+            <FileText size={28} className="text-accent" />
+          </div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">Keine Dokumente</h2>
+          <p className="text-gray-500 text-sm">Hier erscheinen Reports, Verträge und Briefings, sobald sie für dich bereitgestellt werden.</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import StatCard from '../components/StatCard'
-import { CreditCard, TrendingUp, Megaphone, Users, ExternalLink, Calendar } from 'lucide-react'
+import { CreditCard, TrendingUp, Megaphone, Users, ExternalLink, Calendar, Sparkles, Clock } from 'lucide-react'
 
 export default function Dashboard() {
   const { customer } = useAuth()
@@ -25,8 +25,40 @@ export default function Dashboard() {
     fetchStats()
   }, [])
 
+  // Welcome state when no customer is loaded
+  if (!customer) {
+    return (
+      <div className="max-w-2xl mx-auto text-center py-20">
+        <div className="mx-auto w-16 h-16 bg-gold/10 rounded-2xl flex items-center justify-center mb-6">
+          <Sparkles size={32} className="text-gold" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-900 mb-3">Willkommen im Kundenportal!</h1>
+        <p className="text-gray-500 mb-8 leading-relaxed">
+          Dein Account wird gerade eingerichtet. Sobald alles bereit ist, siehst du hier
+          deine Kampagnen, Performance-Daten und Hot Leads auf einen Blick.
+        </p>
+        <div className="bg-white rounded-xl border border-gray-200 p-6 text-left space-y-4">
+          <div className="flex items-start gap-3">
+            <Clock size={20} className="text-accent mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-medium text-gray-900 text-sm">Account-Einrichtung läuft</p>
+              <p className="text-gray-500 text-sm">Unser Team verknüpft deinen Zugang mit deinem Kundenkonto. Das dauert normalerweise nur wenige Minuten.</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-3">
+            <Calendar size={20} className="text-accent mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-medium text-gray-900 text-sm">Fragen?</p>
+              <p className="text-gray-500 text-sm">Kontaktiere uns jederzeit unter <a href="mailto:office@marketingwerk.at" className="text-accent hover:underline">office@marketingwerk.at</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const contractProgress = () => {
-    if (!customer?.contract_start || !customer?.contract_end) return 0
+    if (!customer.contract_start || !customer.contract_end) return 0
     const start = new Date(customer.contract_start).getTime()
     const end = new Date(customer.contract_end).getTime()
     const now = Date.now()
@@ -43,18 +75,18 @@ export default function Dashboard() {
   return (
     <div className="max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">
-        Willkommen, {customer?.name || '...'}
+        Willkommen, {customer.name}
       </h1>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard icon={CreditCard} label="Credits verfügbar" value={customer?.credits_available ?? 0} color="text-green-600" />
-        <StatCard icon={TrendingUp} label="Credits verbraucht" value={customer?.credits_used ?? 0} color="text-orange-500" />
+        <StatCard icon={CreditCard} label="Credits verfügbar" value={customer.credits_available ?? 0} color="text-green-600" />
+        <StatCard icon={TrendingUp} label="Credits verbraucht" value={customer.credits_used ?? 0} color="text-orange-500" />
         <StatCard icon={Megaphone} label="Aktive Kampagnen" value={activeCampaigns} />
         <StatCard icon={Users} label="Hot Leads" value={hotLeadsCount} color="text-pink-500" />
       </div>
 
       {/* Contract progress */}
-      {customer?.contract_start && customer?.contract_end && (
+      {customer.contract_start && customer.contract_end && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-8">
           <h2 className="text-sm font-medium text-gray-500 mb-2">Vertragslaufzeit</h2>
           <p className="text-gray-900 font-semibold mb-3">
@@ -72,7 +104,7 @@ export default function Dashboard() {
 
       {/* Quick actions */}
       <div className="flex flex-wrap gap-3">
-        {customer?.leadtable_url && (
+        {customer.leadtable_url && (
           <a
             href={customer.leadtable_url}
             target="_blank"
@@ -83,7 +115,7 @@ export default function Dashboard() {
             Bewerber verwalten
           </a>
         )}
-        {customer?.calendly_url && (
+        {customer.calendly_url && (
           <a
             href={customer.calendly_url}
             target="_blank"

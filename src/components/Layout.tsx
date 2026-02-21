@@ -8,8 +8,9 @@ import {
   LinkIcon,
   LogOut,
   Menu,
-  X,
 } from 'lucide-react'
+
+const LOGO_URL = 'https://raw.githubusercontent.com/hoellermike/marketingwerk-portal/refs/heads/main/med_alt2%402x.png'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -23,14 +24,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
+  const logoSrc = customer?.logo_url || LOGO_URL
+
   const sidebar = (
     <div className="flex flex-col h-full">
       <div className="p-6 border-b border-white/10">
-        {customer?.logo_url ? (
-          <img src={customer.logo_url} alt="Logo" className="h-8" />
-        ) : (
-          <span className="text-xl font-bold text-white">marketingwerk</span>
-        )}
+        <img src={logoSrc} alt="Logo" className="h-8" />
       </div>
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
@@ -90,7 +89,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <button onClick={() => setSidebarOpen(true)}>
             <Menu size={24} className="text-gray-700" />
           </button>
-          <span className="font-semibold text-navy">marketingwerk</span>
+          <img src={logoSrc} alt="marketingwerk" className="h-6" />
         </header>
         <main className="flex-1 overflow-auto p-6">
           {children}

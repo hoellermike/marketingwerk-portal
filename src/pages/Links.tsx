@@ -51,9 +51,12 @@ export default function Links() {
       <h1 className="text-2xl font-bold text-gray-900 mb-6">Links</h1>
 
       {visibleLinks.length === 0 ? (
-        <div className="text-center py-20">
-          <ExternalLink size={48} className="mx-auto text-gray-300 mb-4" />
-          <p className="text-gray-500">Keine Links verfügbar</p>
+        <div className="max-w-md mx-auto text-center py-20">
+          <div className="mx-auto w-14 h-14 bg-accent/10 rounded-2xl flex items-center justify-center mb-5">
+            <LinkIcon size={28} className="text-accent" />
+          </div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-2">Keine Links verfügbar</h2>
+          <p className="text-gray-500 text-sm">Hier findest du bald Schnellzugriffe auf Google Drive, Bewerber-Portal, Calendly und Slack.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { Mail } from 'lucide-react'
+import { Mail, Loader2 } from 'lucide-react'
+
+const LOGO_URL = 'https://raw.githubusercontent.com/hoellermike/marketingwerk-portal/refs/heads/main/med_alt2%402x.png'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -30,8 +32,8 @@ export default function Login() {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-navy">marketingwerk</h1>
-          <p className="text-gray-500 mt-2">Kundenportal</p>
+          <img src={LOGO_URL} alt="marketingwerk" className="h-12 mx-auto mb-3" />
+          <p className="text-gray-500 mt-1">Kundenportal</p>
         </div>
 
         <div className="bg-white rounded-xl border border-gray-200 p-8">
@@ -69,9 +71,16 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-accent text-white py-2.5 rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50"
+                className="w-full bg-accent text-white py-2.5 rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {loading ? 'Wird gesendet...' : 'Magic Link senden'}
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Wird gesendet…
+                  </>
+                ) : (
+                  'Magic Link senden'
+                )}
               </button>
             </form>
           )}
