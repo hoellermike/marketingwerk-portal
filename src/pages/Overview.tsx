@@ -1,35 +1,28 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { Briefcase, Users, Star, Euro, CreditCard } from 'lucide-react'
+import { Briefcase, Users, Star, Euro, CreditCard, Eye } from 'lucide-react'
 import { formatCurrency, formatNumber, formatDate, daysRemaining } from '../lib/format'
 import KPICard from '../components/KPICard'
 import AnnouncementBanner from '../components/AnnouncementBanner'
 import QuickActions from '../components/QuickActions'
 import AccountTeam from '../components/AccountTeam'
 import StatusBadge from '../components/StatusBadge'
-
-interface Campaign {
-  id: string
-  jobtitel: string
-  status: string
-  total_leads: number
-  qualified_leads: number
-  end_date: string | null
-}
+import ActivityFeed from '../components/ActivityFeed'
+import type { JobCampaign } from './Campaigns'
 
 export default function Overview() {
   const { client } = useAuth()
-  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [campaigns, setCampaigns] = useState<JobCampaign[]>([])
 
   useEffect(() => {
     if (!client) return
     supabase
       .from('job_campaigns')
-      .select('id, jobtitel, status, total_leads, qualified_leads, end_date')
+      .select('*')
       .eq('client_id', client.id)
       .order('start_date', { ascending: false })
-      .then(({ data }) => setCampaigns(data || []))
+      .then(({ data }) => setCampaigns((data as JobCampaign[]) || []))
   }, [client])
 
   if (!client) return null
@@ -37,22 +30,26 @@ export default function Overview() {
   const active = campaigns.filter(c => c.status.toLowerCase() === 'aktiv' || c.status.toLowerCase() === 'active')
   const totalLeads = campaigns.reduce((s, c) => s + c.total_leads, 0)
   const totalQualified = campaigns.reduce((s, c) => s + c.qualified_leads, 0)
-  const totalSpend = 0 // will come from campaigns detail if needed
+  const totalSpend = campaigns.reduce((s, c) => s + (c.total_spend || 0), 0)
+  const totalReach = campaigns.reduce((s, c) => s + (c.reach || 0), 0)
 
   return (
     <div className="space-y-6">
       <AnnouncementBanner />
 
       {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
         <KPICard label="Aktive Kampagnen" value={String(active.length)} icon={Briefcase} />
         <KPICard label="Bewerbungen" value={formatNumber(totalLeads)} icon={Users} />
         <KPICard label="Qualifizierte Leads" value={formatNumber(totalQualified)} icon={Star} highlighted />
-        <KPICard label="Gesamtausgaben" value="–" icon={Euro} />
+        <KPICard label="Gesamtausgaben" value={formatCurrency(totalSpend)} icon={Euro} />
+        <KPICard label="Reichweite" value={formatNumber(totalReach)} icon={Eye} />
         <KPICard label="Credits verfügbar" value={formatNumber(client.credits_available)} icon={CreditCard} highlighted />
       </div>
 
       <QuickActions />
+
+      <ActivityFeed />
 
       {/* Kampagnen-Schnellansicht */}
       {campaigns.length > 0 && (

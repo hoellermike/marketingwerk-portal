@@ -2,16 +2,18 @@ import { formatNumber } from '../lib/format'
 
 interface Props {
   impressions: number
-  clicks: number
+  reach: number
+  linkClicks: number
   applications: number
   qualified: number
 }
 
-export default function LeadFunnel({ impressions, clicks, applications, qualified }: Props) {
+export default function LeadFunnel({ impressions, reach, linkClicks, applications, qualified }: Props) {
   const max = impressions || 1
   const bars = [
     { label: 'Impressions', value: impressions, color: 'bg-gray-300' },
-    { label: 'Clicks', value: clicks, color: 'bg-accent/40' },
+    { label: 'Reichweite', value: reach, color: 'bg-gray-400' },
+    { label: 'Link-Klicks', value: linkClicks, color: 'bg-accent/40' },
     { label: 'Bewerbungen', value: applications, color: 'bg-accent/70' },
     { label: 'Qualifiziert', value: qualified, color: 'bg-gold' },
   ]

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import LeadFunnel from '../components/LeadFunnel'
+import CampaignTimeline from '../components/CampaignTimeline'
 import CampaignCard from '../components/CampaignCard'
 
 export interface JobCampaign {
@@ -24,6 +25,11 @@ export interface JobCampaign {
   cpl: number
   cpql: number
   kpi_updated_at: string | null
+  reach: number
+  link_clicks: number
+  cpm: number
+  budget_total: number | null
+  notes: string | null
 }
 
 export default function Campaigns() {
@@ -43,11 +49,12 @@ export default function Campaigns() {
   const totals = campaigns.reduce(
     (acc, c) => ({
       impressions: acc.impressions + c.impressions,
-      clicks: acc.clicks + c.clicks,
+      reach: acc.reach + (c.reach || 0),
+      linkClicks: acc.linkClicks + (c.link_clicks || 0),
       applications: acc.applications + c.total_leads,
       qualified: acc.qualified + c.qualified_leads,
     }),
-    { impressions: 0, clicks: 0, applications: 0, qualified: 0 }
+    { impressions: 0, reach: 0, linkClicks: 0, applications: 0, qualified: 0 }
   )
 
   return (
@@ -55,6 +62,12 @@ export default function Campaigns() {
       {campaigns.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-5">
           <LeadFunnel {...totals} />
+        </div>
+      )}
+
+      {campaigns.length > 0 && (
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <CampaignTimeline campaigns={campaigns} />
         </div>
       )}
 
