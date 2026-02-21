@@ -173,9 +173,11 @@ export default function BriefingWizard({ onClose, pastCampaigns = [], draftId, p
           briefing_status: briefing.briefing_status,
           briefing_data: briefing.briefing_data,
           start_date: briefing.start_date,
+          last_changed_by: 'portal',
+          last_changed_at: new Date().toISOString(),
         }).eq('id', draftId)
       } else {
-        await supabase.from('job_campaigns').insert(briefing)
+        await supabase.from('job_campaigns').insert({ ...briefing, last_changed_by: 'portal', last_changed_at: new Date().toISOString() })
       }
       if (status === 'eingereicht') {
         setSubmitted(true)

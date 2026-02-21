@@ -104,6 +104,8 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
       kunden_feedback_negativ: negativ || null,
       naechster_schritt: schritt,
       feedback_datum: new Date().toISOString(),
+      last_changed_by: 'portal',
+      last_changed_at: new Date().toISOString(),
     }).eq('id', application.id)
     setSaving(false)
     if (!error) {
@@ -120,7 +122,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
   }
 
   async function handleInviteToInterview() {
-    await supabase.from('applications').update({ status: 'Interview terminiert' }).eq('id', application.id)
+    await supabase.from('applications').update({ status: 'Interview terminiert', last_changed_by: 'portal', last_changed_at: new Date().toISOString() }).eq('id', application.id)
     showToast(`Status von ${appName} auf 'Interview' geändert`)
     setPostPrompt(null)
     onFeedbackSaved()

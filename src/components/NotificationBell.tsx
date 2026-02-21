@@ -44,8 +44,18 @@ export default function NotificationBell({ onNavigate, variant = 'dark' }: Props
       .select('*')
       .eq('client_id', client.id)
       .order('created_at', { ascending: false })
-      .limit(10)
+      .limit(20)
       .then(({ data }) => setNotifications(data || []))
+
+    // Realtime subscription for live updates
+    const channel = supabase
+      .channel('notifications-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications', filter: `client_id=eq.${client.id}` }, (payload) => {
+        setNotifications(prev => [payload.new as Notification, ...prev].slice(0, 20))
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channel) }
   }, [client])
 
   useEffect(() => {

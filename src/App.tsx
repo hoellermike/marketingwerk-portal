@@ -12,6 +12,7 @@ import Credits from './pages/Credits'
 import Resources from './pages/Resources'
 import Settings from './pages/Settings'
 import Profile from './pages/Profile'
+import WebhookStatus from './pages/WebhookStatus'
 
 export default function App() {
   return (
@@ -55,6 +56,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/admin/webhooks" element={<WebhookStatus />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </ErrorBoundary>

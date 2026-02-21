@@ -35,10 +35,12 @@ export default function RejectionDialog({ applicant, onClose, onDone, defaultCho
         talent_pool_reason: reason || null,
         tags: tags.length > 0 ? tags : null,
         verfuegbar_ab: verfuegbarAb || null,
+        last_changed_by: 'portal',
+        last_changed_at: new Date().toISOString(),
       }).eq('id', applicant.id)
       showToast(`${name} wurde in den Talent Pool verschoben`)
     } else {
-      await supabase.from('applications').update({ status: 'Nicht passend' }).eq('id', applicant.id)
+      await supabase.from('applications').update({ status: 'Nicht passend', last_changed_by: 'portal', last_changed_at: new Date().toISOString() }).eq('id', applicant.id)
       showToast(`${name} wurde als "Nicht passend" markiert`)
     }
     setSaving(false)

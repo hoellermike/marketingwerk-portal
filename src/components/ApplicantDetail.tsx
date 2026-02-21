@@ -83,7 +83,7 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate, o
       setShowRejectionDialog(true)
       return
     }
-    await supabase.from('applications').update({ status: newStatus }).eq('id', app.id)
+    await supabase.from('applications').update({ status: newStatus, last_changed_by: 'portal', last_changed_at: new Date().toISOString() }).eq('id', app.id)
     showToast(`Status von ${name} auf '${mapStatus(newStatus).label}' geändert`)
     onUpdate()
   }
