@@ -2,27 +2,34 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { supabase } from '../lib/supabase'
 import type { Session, User } from '@supabase/supabase-js'
 
-interface Customer {
+export interface Client {
   id: string
   name: string
-  package: string | null
-  contact_name: string | null
-  contact_email: string | null
+  slug: string | null
+  status: string
+  branche: string | null
+  website: string | null
+  ansprache: string
   credits_available: number
   credits_used: number
-  contract_start: string | null
-  contract_end: string | null
   gdrive_folder_url: string | null
-  leadtable_url: string | null
   slack_channel_url: string | null
+  slack_channel_id: string | null
+  asana_project_url: string | null
   calendly_url: string | null
+  stripe_payment_link: string | null
+  campaign_request_url: string | null
+  quote_request_url: string | null
+  change_request_url: string | null
   logo_url: string | null
+  account_owner: string
+  onboarding_date: string | null
 }
 
 interface AuthContextType {
   session: Session | null
   user: User | null
-  customer: Customer | null
+  client: Client | null
   loading: boolean
   signOut: () => Promise<void>
 }
@@ -30,30 +37,30 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType>({
   session: null,
   user: null,
-  customer: null,
+  client: null,
   loading: true,
   signOut: async () => {},
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null)
-  const [customer, setCustomer] = useState<Customer | null>(null)
+  const [client, setClient] = useState<Client | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const fetchCustomer = async (userId: string) => {
+  const fetchClient = async (userId: string) => {
     const { data: portalUser } = await supabase
       .from('portal_users')
-      .select('customer_id')
+      .select('client_id')
       .eq('id', userId)
       .single()
 
-    if (portalUser?.customer_id) {
+    if (portalUser?.client_id) {
       const { data } = await supabase
-        .from('customers')
+        .from('clients')
         .select('*')
-        .eq('id', portalUser.customer_id)
+        .eq('id', portalUser.client_id)
         .single()
-      setCustomer(data)
+      setClient(data)
     }
   }
 
@@ -61,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session?.user) {
-        fetchCustomer(session.user.id).finally(() => setLoading(false))
+        fetchClient(session.user.id).finally(() => setLoading(false))
       } else {
         setLoading(false)
       }
@@ -70,9 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       if (session?.user) {
-        fetchCustomer(session.user.id).finally(() => setLoading(false))
+        fetchClient(session.user.id).finally(() => setLoading(false))
       } else {
-        setCustomer(null)
+        setClient(null)
         setLoading(false)
       }
     })
@@ -82,15 +89,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     await supabase.auth.signOut()
-    setCustomer(null)
+    setClient(null)
   }
 
   return (
-    <AuthContext.Provider value={{ session, user: session?.user ?? null, customer, loading, signOut }}>
+    <AuthContext.Provider value={{ session, user: session?.user ?? null, client, loading, signOut }}>
       {children}
     </AuthContext.Provider>
   )
 }
 
 export const useAuth = () => useContext(AuthContext)
-export type { Customer }

@@ -3,11 +3,10 @@ import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
+import Overview from './pages/Overview'
 import Campaigns from './pages/Campaigns'
-import CampaignDetail from './pages/CampaignDetail'
-import Documents from './pages/Documents'
-import Links from './pages/Links'
+import Credits from './pages/Credits'
+import Resources from './pages/Resources'
 
 export default function App() {
   return (
@@ -16,22 +15,23 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
-            path="/*"
+            path="/"
             element={
               <ProtectedRoute>
                 <Layout>
-                  <Routes>
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/campaigns" element={<Campaigns />} />
-                    <Route path="/campaigns/:id" element={<CampaignDetail />} />
-                    <Route path="/documents" element={<Documents />} />
-                    <Route path="/links" element={<Links />} />
-                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                  </Routes>
+                  {(tab) => {
+                    switch (tab) {
+                      case 'campaigns': return <Campaigns />
+                      case 'credits': return <Credits />
+                      case 'resources': return <Resources />
+                      default: return <Overview />
+                    }
+                  }}
                 </Layout>
               </ProtectedRoute>
             }
           />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
