@@ -30,6 +30,11 @@ export interface JobCampaign {
   cpm: number
   budget_total: number | null
   notes: string | null
+  setup_phase: string | null
+  creative_urls: string[] | null
+  anzeigentext_primaer: string | null
+  anzeigen_headline: string | null
+  anzeigen_cta: string | null
 }
 
 export default function Campaigns() {

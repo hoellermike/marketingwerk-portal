@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { CreditCard, TrendingDown, Info } from 'lucide-react'
+import { CreditCard, TrendingDown, Info, ExternalLink } from 'lucide-react'
 import KPICard from '../components/KPICard'
+import CreditForecast from '../components/CreditForecast'
 import { formatNumber, formatDate } from '../lib/format'
 
 interface CreditTransaction {
@@ -11,6 +12,7 @@ interface CreditTransaction {
   type: string
   amount: number
   date: string
+  invoice_url: string | null
 }
 
 export default function Credits() {
@@ -42,6 +44,8 @@ export default function Credits() {
         <KPICard label="Credit-Info" value="1 Credit = 1 Tag" icon={Info} tint="blue" subtitle="1 Credit = 1 Kampagnen-Tag" />
       </div>
 
+      <CreditForecast creditsAvailable={client.credits_available} transactions={txns} />
+
       {txns.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Transaktionsverlauf</h2>
@@ -53,6 +57,7 @@ export default function Credits() {
                   <th className="px-5 py-3.5 font-medium">Beschreibung</th>
                   <th className="px-5 py-3.5 font-medium text-center">Typ</th>
                   <th className="px-5 py-3.5 font-medium text-right">Credits</th>
+                  <th className="px-5 py-3.5 font-medium text-center">Rechnung</th>
                 </tr>
               </thead>
               <tbody>
@@ -72,6 +77,13 @@ export default function Credits() {
                       </td>
                       <td className={`px-5 py-3.5 text-right font-medium ${isCredit ? 'text-emerald-600' : 'text-red-600'}`}>
                         {isCredit ? '+' : ''}{formatNumber(t.amount)}
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        {t.invoice_url ? (
+                          <a href={t.invoice_url} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent/80">
+                            <ExternalLink size={14} className="inline" />
+                          </a>
+                        ) : null}
                       </td>
                     </tr>
                   )

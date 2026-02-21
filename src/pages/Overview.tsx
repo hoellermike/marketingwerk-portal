@@ -9,6 +9,7 @@ import QuickActions from '../components/QuickActions'
 import AccountTeam from '../components/AccountTeam'
 import StatusBadge from '../components/StatusBadge'
 import ActivityFeed from '../components/ActivityFeed'
+import { MonthlyReportButton } from '../components/ReportButton'
 import type { JobCampaign } from './Campaigns'
 
 export default function Overview() {
@@ -36,9 +37,12 @@ export default function Overview() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">Tracking ongoing activities and campaign performance.</p>
+      <div className="flex items-center justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+          <p className="text-sm text-gray-500 mt-1">Tracking ongoing activities and campaign performance.</p>
+        </div>
+        {campaigns.length > 0 && <MonthlyReportButton campaigns={campaigns} />}
       </div>
 
       <AnnouncementBanner />
