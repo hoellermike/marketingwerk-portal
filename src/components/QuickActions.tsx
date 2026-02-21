@@ -1,9 +1,8 @@
 import { useAuth } from '../contexts/AuthContext'
-import { PlusCircle, FileText, CreditCard, Upload, Headphones, CalendarClock, Zap } from 'lucide-react'
+import { PlusCircle, CreditCard, Upload, Headphones, CalendarClock, Zap } from 'lucide-react'
 
 const actions = [
   { key: 'campaign_request_url', icon: PlusCircle, title: 'Neue Kampagne', desc: 'Kampagnen-Anfrage starten' },
-  { key: 'quote_request_url', icon: FileText, title: 'Angebot anfordern', desc: 'Individuelles Angebot erhalten' },
   { key: 'stripe_payment_link', icon: CreditCard, title: 'Credits kaufen', desc: 'Credit-Guthaben aufladen' },
   { key: 'gdrive_folder_url', icon: Upload, title: 'Assets hochladen', desc: 'Dateien im Drive ablegen' },
   { key: 'slack_channel_url', icon: Headphones, title: 'Support kontaktieren', desc: 'Direkt im Slack-Channel' },

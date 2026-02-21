@@ -5,6 +5,7 @@ import Layout from './components/Layout'
 import Login from './pages/Login'
 import Overview from './pages/Overview'
 import Campaigns from './pages/Campaigns'
+import Applicants from './pages/Applicants'
 import Credits from './pages/Credits'
 import Resources from './pages/Resources'
 
@@ -22,6 +23,7 @@ export default function App() {
                   {(tab) => {
                     switch (tab) {
                       case 'campaigns': return <Campaigns />
+                      case 'applicants': return <Applicants />
                       case 'credits': return <Credits />
                       case 'resources': return <Resources />
                       default: return <Overview />

@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { LogOut, LayoutDashboard, Megaphone, CreditCard, FolderOpen, Menu, X } from 'lucide-react'
+import { LogOut, LayoutDashboard, Megaphone, Users, CreditCard, FolderOpen, Menu, X } from 'lucide-react'
+import NotificationBell from './NotificationBell'
 
 const LOGO_URL = 'https://raw.githubusercontent.com/hoellermike/marketingwerk-portal/refs/heads/main/med_alt2%402x.png'
 
 const navItems = [
   { key: 'overview', label: 'Dashboard', icon: LayoutDashboard },
   { key: 'campaigns', label: 'Kampagnen', icon: Megaphone },
+  { key: 'applicants', label: 'Bewerber', icon: Users },
   { key: 'credits', label: 'Credits', icon: CreditCard },
   { key: 'resources', label: 'Ressourcen', icon: FolderOpen },
 ] as const
@@ -65,6 +67,11 @@ export default function Layout({ children }: Props) {
 
       {/* Spacer */}
       <div className="flex-1" />
+
+      {/* Notification Bell */}
+      <div className="px-3 pb-2">
+        <NotificationBell onNavigate={(tab) => setTab(tab as TabKey)} />
+      </div>
 
       {/* User section */}
       <div className="px-3 pb-5">

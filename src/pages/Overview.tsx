@@ -1,20 +1,29 @@
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { Briefcase, Users, Star, Euro, CreditCard, Eye, Info } from 'lucide-react'
+import { Briefcase, Users, Star, CreditCard, AlertTriangle, Info, Activity, ChevronRight } from 'lucide-react'
 import { formatCurrency, formatNumber, formatDate, daysRemaining } from '../lib/format'
+import { needsFeedback } from '../lib/statusMap'
 import KPICard from '../components/KPICard'
 import AnnouncementBanner from '../components/AnnouncementBanner'
 import QuickActions from '../components/QuickActions'
-import AccountTeam from '../components/AccountTeam'
 import StatusBadge from '../components/StatusBadge'
-import ActivityFeed from '../components/ActivityFeed'
-import { MonthlyReportButton } from '../components/ReportButton'
 import type { JobCampaign } from './Campaigns'
+
+interface SimpleApplication {
+  id: string
+  status: string
+  feedback_datum: string | null
+}
 
 export default function Overview() {
   const { client } = useAuth()
+  const [, setSearchParams] = useSearchParams()
   const [campaigns, setCampaigns] = useState<JobCampaign[]>([])
+  const [feedbackCount, setFeedbackCount] = useState(0)
+  const [activities, setActivities] = useState<any[]>([])
+  const [contacts, setContacts] = useState<any[]>([])
 
   useEffect(() => {
     if (!client) return
@@ -24,6 +33,31 @@ export default function Overview() {
       .eq('client_id', client.id)
       .order('start_date', { ascending: false })
       .then(({ data }) => setCampaigns((data as JobCampaign[]) || []))
+
+    supabase
+      .from('applications')
+      .select('id, status, feedback_datum')
+      .eq('client_id', client.id)
+      .eq('sichtbar_fuer_kunde', true)
+      .then(({ data }) => {
+        const apps = (data as SimpleApplication[]) || []
+        setFeedbackCount(apps.filter(a => needsFeedback(a.status, a.feedback_datum)).length)
+      })
+
+    supabase
+      .from('activity_feed')
+      .select('*')
+      .eq('client_id', client.id)
+      .order('created_at', { ascending: false })
+      .limit(3)
+      .then(({ data }) => setActivities(data || []))
+
+    supabase
+      .from('contacts')
+      .select('*')
+      .eq('client_id', client.id)
+      .order('sort_order')
+      .then(({ data }) => setContacts(data || []))
   }, [client])
 
   if (!client) return null
@@ -31,35 +65,58 @@ export default function Overview() {
   const active = campaigns.filter(c => c.status.toLowerCase() === 'aktiv' || c.status.toLowerCase() === 'active')
   const totalLeads = campaigns.reduce((s, c) => s + c.total_leads, 0)
   const totalQualified = campaigns.reduce((s, c) => s + c.qualified_leads, 0)
-  const totalSpend = campaigns.reduce((s, c) => s + (c.total_spend || 0), 0)
-  const totalReach = campaigns.reduce((s, c) => s + (c.reach || 0), 0)
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between flex-wrap gap-3">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Tracking ongoing activities and campaign performance.</p>
-        </div>
-        {campaigns.length > 0 && <MonthlyReportButton campaigns={campaigns} />}
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-500 mt-1">Tracking ongoing activities and campaign performance.</p>
       </div>
 
       <AnnouncementBanner />
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+      {/* KPIs — max 5 */}
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <KPICard label="Aktive Kampagnen" value={String(active.length)} icon={Briefcase} tint="blue" />
         <KPICard label="Bewerbungen" value={formatNumber(totalLeads)} icon={Users} tint="mint" />
         <KPICard label="Qualifizierte Leads" value={formatNumber(totalQualified)} icon={Star} tint="gold" />
-        <KPICard label="Gesamtausgaben" value={formatCurrency(totalSpend)} icon={Euro} tint="peach" />
-        <KPICard label="Reichweite" value={formatNumber(totalReach)} icon={Eye} tint="purple" />
+        <button onClick={() => setSearchParams({ tab: 'applicants' })} className="text-left">
+          <KPICard label="Feedback offen" value={formatNumber(feedbackCount)} icon={AlertTriangle} tint="peach" />
+        </button>
         <KPICard label="Credits verfügbar" value={formatNumber(client.credits_available)} icon={CreditCard} tint="gold" />
       </div>
 
       <QuickActions />
 
-      <ActivityFeed />
+      {/* Activity Feed — compact, max 3 */}
+      {activities.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Activity size={18} className="text-accent" />
+            <h2 className="text-lg font-semibold text-gray-900">Letzte Aktivitäten</h2>
+          </div>
+          <div className="bg-white rounded-2xl border border-card-border shadow-sm p-5">
+            <div className="space-y-3">
+              {activities.map(a => (
+                <div key={a.id} className="flex gap-3 items-start">
+                  <div className="w-2 h-2 rounded-full bg-accent mt-2 shrink-0" />
+                  <div>
+                    <p className="text-sm text-gray-900">{a.title}</p>
+                    {a.description && <p className="text-xs text-gray-500">{a.description}</p>}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <button
+              onClick={() => {}}
+              className="text-xs text-accent hover:underline mt-3 block"
+            >
+              Mehr anzeigen →
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Kampagnen-Schnellansicht */}
       {campaigns.length > 0 && (
@@ -100,21 +157,47 @@ export default function Overview() {
         </div>
       )}
 
-      {/* Account Info + Team */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div>
-          <div className="flex items-center gap-2 mb-3">
-            <Info size={18} className="text-accent" />
-            <h3 className="text-lg font-semibold text-gray-900">Account-Info</h3>
-          </div>
-          <div className="bg-white rounded-2xl border border-card-border shadow-sm p-6 space-y-3 text-sm">
-            <Row label="Account Manager" value={client.account_owner} />
-            <Row label="Status" value={client.status} />
-            {client.branche && <Row label="Branche" value={client.branche} />}
-            {client.onboarding_date && <Row label="Kunde seit" value={formatDate(client.onboarding_date)} />}
+      {/* Account Info + Team — combined */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <Info size={18} className="text-accent" />
+          <h3 className="text-lg font-semibold text-gray-900">Account & Team</h3>
+        </div>
+        <div className="bg-white rounded-2xl border border-card-border shadow-sm p-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Account info */}
+            <div className="space-y-3 text-sm">
+              <Row label="Account Manager" value={client.account_owner} />
+              <Row label="Status" value={client.status} />
+              {client.branche && <Row label="Branche" value={client.branche} />}
+              {client.onboarding_date && <Row label="Kunde seit" value={formatDate(client.onboarding_date)} />}
+            </div>
+            {/* Team */}
+            {contacts.length > 0 && (
+              <div className="space-y-2">
+                {contacts.map((c: any) => {
+                  const initials = c.name.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
+                  return (
+                    <div key={c.id} className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-kpi-blue text-accent flex items-center justify-center text-xs font-bold shrink-0">
+                        {initials}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900">{c.name}</p>
+                        {c.role && <p className="text-xs text-gray-500">{c.role}</p>}
+                      </div>
+                      {c.email && (
+                        <a href={`mailto:${c.email}`} className="text-xs text-accent hover:underline">
+                          <ChevronRight size={14} />
+                        </a>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </div>
-        <AccountTeam />
       </div>
     </div>
   )
