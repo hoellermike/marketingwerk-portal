@@ -1,7 +1,8 @@
-import { useState } from 'react'
-import { X, Star, Phone, Mail, MapPin, FileText, Download, Briefcase, GraduationCap, Calendar, Euro, Languages } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, Star, Phone, Mail, MapPin, FileText, Download, Briefcase, GraduationCap, Calendar, Euro, Languages, Link2 } from 'lucide-react'
 import { mapStatus } from '../lib/statusMap'
 import { formatDate } from '../lib/format'
+import { supabase } from '../lib/supabase'
 import ApplicantFeedback from './ApplicantFeedback'
 import ApplicantTimeline from './ApplicantTimeline'
 
@@ -32,21 +33,60 @@ export interface ApplicationDetail {
   naechster_schritt: string | null
   feedback_datum: string | null
   job_campaigns?: { jobtitel: string } | null
+  // Talent pool fields
+  is_talent_pool?: boolean
+  talent_pool_date?: string | null
+  talent_pool_reason?: string | null
+  tags?: string[] | null
+  verfuegbar_ab?: string | null
+  // Duplicate fields
+  duplicate_of?: string | null
+  duplicate_confidence?: string | null
+  duplicate_checked?: boolean
+  // Client ID for duplicate lookup
+  client_id?: string
 }
 
 interface Props {
   application: ApplicationDetail
   onClose: () => void
   onUpdate: () => void
+  onReject?: (app: ApplicationDetail) => void
 }
 
 const tabs = ['Profil', 'Dokumente', 'Feedback', 'Verlauf'] as const
 type Tab = typeof tabs[number]
 
-export default function ApplicantDetail({ application: app, onClose, onUpdate }: Props) {
+export default function ApplicantDetail({ application: app, onClose, onUpdate, onReject }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('Profil')
+  const [duplicates, setDuplicates] = useState<{ id: string; vorname: string | null; status: string; jobtitel: string; bewerbungsdatum: string }[]>([])
   const status = mapStatus(app.status)
   const name = `${app.vorname || 'Bewerber'}${app.nachname_initial ? ` ${app.nachname_initial}.` : ''}`
+
+  // Load duplicate info
+  useEffect(() => {
+    if (!app.duplicate_of && !app.id) return
+    // Find other applications that share the same duplicate_of or are the duplicate_of target
+    const loadDupes = async () => {
+      if (!app.client_id) return
+      const { data } = await supabase
+        .from('applications')
+        .select('id, vorname, status, bewerbungsdatum, job_campaigns(jobtitel)')
+        .eq('client_id', app.client_id)
+        .neq('id', app.id)
+        .or(`duplicate_of.eq.${app.id},id.eq.${app.duplicate_of || '00000000-0000-0000-0000-000000000000'}`)
+      if (data) {
+        setDuplicates(data.map((d: any) => ({
+          id: d.id,
+          vorname: d.vorname,
+          status: d.status,
+          jobtitel: d.job_campaigns?.jobtitel || '–',
+          bewerbungsdatum: d.bewerbungsdatum,
+        })))
+      }
+    }
+    loadDupes()
+  }, [app.id, app.duplicate_of, app.client_id])
 
   return (
     <>
@@ -80,9 +120,19 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate }:
                 </div>
               )}
             </div>
-            <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
-              <X size={20} />
-            </button>
+            <div className="flex items-center gap-1">
+              {onReject && (
+                <button
+                  onClick={() => onReject(app)}
+                  className="text-xs text-red-500 hover:text-red-700 font-medium px-2 py-1 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  Absagen
+                </button>
+              )}
+              <button onClick={onClose} className="p-1 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors">
+                <X size={20} />
+              </button>
+            </div>
           </div>
 
           {/* Tabs */}
@@ -105,6 +155,43 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate }:
 
         {/* Content */}
         <div className="flex-1 overflow-y-auto px-6 py-5">
+          {/* Talent Pool Banner */}
+          {app.is_talent_pool && (
+            <div className="mb-4 bg-blue-50 border border-blue-100 rounded-xl p-4">
+              <p className="text-sm font-medium text-blue-800">
+                🏊 Talent Pool — Beworben auf {app.job_campaigns?.jobtitel || '–'} ({formatDate(app.bewerbungsdatum)})
+              </p>
+              {app.talent_pool_reason && <p className="text-xs text-blue-600 mt-1">{app.talent_pool_reason}</p>}
+              {app.verfuegbar_ab && <p className="text-xs text-blue-600 mt-0.5">Verfügbar ab: {formatDate(app.verfuegbar_ab)}</p>}
+              {(app.tags || []).length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {app.tags!.map(tag => (
+                    <span key={tag} className="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Duplicate Banner */}
+          {duplicates.length > 0 && (
+            <div className="mb-4 bg-amber-50 border border-amber-100 rounded-xl p-4">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Link2 size={14} className="text-amber-600" />
+                <p className="text-sm font-medium text-amber-800">Dieser Kandidat hat sich auch auf andere Stellen bei Ihnen beworben:</p>
+              </div>
+              <div className="space-y-1">
+                {duplicates.map(d => (
+                  <div key={d.id} className="flex items-center gap-3 text-xs text-amber-700">
+                    <span className="font-medium">{d.jobtitel}</span>
+                    <span className="text-amber-500">{formatDate(d.bewerbungsdatum)}</span>
+                    <span className="text-amber-500 capitalize">{d.status}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           {activeTab === 'Profil' && <ProfileTab app={app} />}
           {activeTab === 'Dokumente' && <DocumentsTab urls={app.dokumente_urls} />}
           {activeTab === 'Feedback' && (

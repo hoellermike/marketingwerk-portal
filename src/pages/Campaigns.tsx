@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import CampaignCard from '../components/CampaignCard'
 import { formatDate } from '../lib/format'
+import BriefingWizard from '../components/BriefingWizard'
+import CampaignCalendar from '../components/CampaignCalendar'
+import { Plus, List, Calendar } from 'lucide-react'
 
 export interface JobCampaign {
   id: string
@@ -50,6 +53,18 @@ const statusConfig: { key: string; label: string; match: (s: string) => boolean;
 export default function Campaigns() {
   const { client } = useAuth()
   const [campaigns, setCampaigns] = useState<JobCampaign[]>([])
+  const [showWizard, setShowWizard] = useState(false)
+  const [view, setView] = useState<'list' | 'calendar'>('list')
+
+  const fetchCampaigns = useCallback(() => {
+    if (!client) return
+    supabase
+      .from('job_campaigns')
+      .select('*')
+      .eq('client_id', client.id)
+      .order('start_date', { ascending: false })
+      .then(({ data }) => setCampaigns(data || []))
+  }, [client])
 
   const defaultFrom = useMemo(() => {
     const d = new Date()
@@ -61,15 +76,7 @@ export default function Campaigns() {
   const [dateFrom, setDateFrom] = useState(defaultFrom)
   const [dateTo, setDateTo] = useState(defaultTo)
 
-  useEffect(() => {
-    if (!client) return
-    supabase
-      .from('job_campaigns')
-      .select('*')
-      .eq('client_id', client.id)
-      .order('start_date', { ascending: false })
-      .then(({ data }) => setCampaigns(data || []))
-  }, [client])
+  useEffect(() => { fetchCampaigns() }, [fetchCampaigns])
 
   // Count campaigns by status
   const statusCounts = useMemo(() => {
@@ -85,13 +92,25 @@ export default function Campaigns() {
 
   return (
     <div className="space-y-6">
+      {showWizard && <BriefingWizard onClose={() => { setShowWizard(false); fetchCampaigns() }} pastCampaigns={campaigns.map(c => ({ id: c.id, jobtitel: c.jobtitel }))} />}
+
       {/* Header + Date Filter */}
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Kampagnen</h1>
-          <p className="text-sm text-gray-500 mt-1">Übersicht Ihrer Kampagnen</p>
+        <div className="flex items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">Kampagnen</h1>
+            <p className="text-sm text-gray-500 mt-1">Übersicht Ihrer Kampagnen</p>
+          </div>
+          <button onClick={() => setShowWizard(true)} className="flex items-center gap-1.5 px-4 py-2 bg-[#3572E8] text-white rounded-lg text-sm font-medium hover:bg-[#2860d0] transition-colors">
+            <Plus size={16} /> Neue Kampagne anfragen
+          </button>
         </div>
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex items-center gap-3">
+          <div className="flex bg-gray-100 rounded-lg p-0.5">
+            <button onClick={() => setView('list')} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${view === 'list' ? 'bg-[#3572E8] text-white' : 'text-gray-600'}`}><List size={14} /> Liste</button>
+            <button onClick={() => setView('calendar')} className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${view === 'calendar' ? 'bg-[#3572E8] text-white' : 'text-gray-600'}`}><Calendar size={14} /> Kalender</button>
+          </div>
+          <div className="flex items-center gap-2 text-sm">
           <label className="text-gray-500">Von</label>
           <input
             type="date"
@@ -107,8 +126,12 @@ export default function Campaigns() {
             className="border border-gray-200 rounded-lg px-3 py-1.5 text-sm text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-[#3572E8]/20 focus:border-[#3572E8]"
           />
         </div>
+        </div>
       </div>
 
+      {view === 'calendar' ? (
+        <CampaignCalendar campaigns={campaigns} onRefresh={fetchCampaigns} />
+      ) : (<>
       {/* Status Summary Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {statusConfig.map(sc => (
@@ -131,6 +154,7 @@ export default function Campaigns() {
           <p className="text-sm text-gray-400 text-center py-12">Keine Kampagnen vorhanden.</p>
         )}
       </div>
+      </>)}
     </div>
   )
 }
