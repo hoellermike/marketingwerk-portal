@@ -60,6 +60,34 @@ export default function EmailTemplates() {
     setTimeout(() => { ta.focus(); ta.selectionStart = ta.selectionEnd = start + v.length }, 0)
   }
 
+  function replaceVars(text: string): string {
+    const today = new Date()
+    const dd = String(today.getDate()).padStart(2, '0')
+    const mm = String(today.getMonth() + 1).padStart(2, '0')
+    const yyyy = today.getFullYear()
+    const map: Record<string, string> = {
+      '{{bewerber_vorname}}': 'Stefan',
+      '{{bewerber_nachname}}': 'Müller',
+      '{{bewerber_name}}': 'Stefan Müller',
+      '{{stelle}}': 'Chef de Rang (m/w/d)',
+      '{{firmenname}}': 'Lanserhof',
+      '{{standort}}': 'Sylt',
+      '{{status}}': 'Qualifiziert',
+      '{{interview_datum}}': '15.03.2026',
+      '{{interview_uhrzeit}}': '10:00 Uhr',
+      '{{portal_link}}': 'https://portal.marketingwerk.at',
+      '{{datum_heute}}': `${dd}.${mm}.${yyyy}`,
+      '{{ansprechpartner}}': 'Michael Höller',
+      '{{startdatum}}': '01.04.2026',
+      '{{kalenderwoche}}': 'KW 12',
+    }
+    let result = text
+    for (const [k, v] of Object.entries(map)) {
+      result = result.replaceAll(k, v)
+    }
+    return result
+  }
+
   const grouped = {
     'An Bewerber': templates.filter(t => t.recipient_type === 'applicant'),
     'An Kunde': templates.filter(t => t.recipient_type === 'client'),
@@ -130,8 +158,14 @@ export default function EmailTemplates() {
           </div>
 
           {preview ? (
-            <div className="flex-1 border border-gray-200 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap bg-gray-50 overflow-y-auto">
-              {selected.body.replace(/\{\{bewerber_vorname\}\}/g, 'Max').replace(/\{\{bewerber_nachname\}\}/g, 'Mustermann').replace(/\{\{stelle\}\}/g, 'Koch/Köchin').replace(/\{\{firmenname\}\}/g, 'Lanserhof').replace(/\{\{status\}\}/g, 'Qualifiziert')}
+            <div className="flex-1 border border-gray-200 rounded-xl overflow-hidden overflow-y-auto">
+              <div className="bg-gray-100 px-4 py-3 border-b border-gray-200 text-sm space-y-1">
+                <p className="text-gray-600"><span className="font-medium text-gray-700">An:</span> stefan.mueller@example.at</p>
+                <p className="text-gray-600"><span className="font-medium text-gray-700">Betreff:</span> {replaceVars(selected.subject)}</p>
+              </div>
+              <div className="bg-gray-50 px-4 py-4 text-sm text-gray-700 whitespace-pre-wrap">
+                {replaceVars(selected.body)}
+              </div>
             </div>
           ) : (
             <textarea ref={bodyRef} value={selected.body} onChange={e => setSelected({ ...selected, body: e.target.value })}

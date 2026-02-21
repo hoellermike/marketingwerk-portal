@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
-import { Bell } from 'lucide-react'
+import { Bell, Mail } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import { supabase } from '../lib/supabase'
 
 interface Notification {
@@ -31,6 +32,7 @@ interface Props {
 
 export default function NotificationBell({ onNavigate, variant = 'dark' }: Props) {
   const { client } = useAuth()
+  const { showToast } = useToast()
   const [notifications, setNotifications] = useState<Notification[]>([])
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -90,6 +92,19 @@ export default function NotificationBell({ onNavigate, variant = 'dark' }: Props
           <div className="px-4 py-3 border-b border-gray-100">
             <p className="text-sm font-semibold text-gray-900">Benachrichtigungen</p>
           </div>
+          {/* Pending email mock */}
+          <div className="px-4 py-3 border-b border-gray-100 bg-amber-50/50">
+            <div className="flex items-start gap-2">
+              <Mail size={14} className="text-amber-600 mt-0.5 shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-amber-700">1 E-Mail wartet auf Freigabe</p>
+                <p className="text-xs text-gray-600 mt-0.5">Absage an Stefan M. — Chef de Rang</p>
+                <button onClick={() => { showToast('E-Mail-Freigabe wird in einer zukünftigen Version verfügbar', 'info'); setOpen(false) }}
+                  className="text-xs text-[#3572E8] hover:underline font-medium mt-1">Prüfen &amp; Senden</button>
+              </div>
+            </div>
+          </div>
+
           {notifications.length === 0 ? (
             <div className="px-4 py-8 text-center">
               <Bell size={24} className="mx-auto text-gray-300 mb-2" />

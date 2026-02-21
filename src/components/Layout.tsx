@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
-import { LogOut, LayoutDashboard, Megaphone, Users, CreditCard, FolderOpen, Menu, X, Settings } from 'lucide-react'
+import { LogOut, LayoutDashboard, Megaphone, Users, CreditCard, FolderOpen, Menu, X, Settings, UserCircle } from 'lucide-react'
 import NotificationBell from './NotificationBell'
 import { usePageTitle } from '../lib/usePageTitle'
 
@@ -75,6 +75,14 @@ export default function Layout({ children }: Props) {
         <a href="/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-navy-muted hover:bg-navy-light/50 hover:text-white transition-colors">
           <Settings size={18} />
           Einstellungen
+        </a>
+      </div>
+
+      {/* Profile link */}
+      <div className="px-3 pb-1">
+        <a href="/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-navy-muted hover:bg-navy-light/50 hover:text-white transition-colors">
+          <UserCircle size={18} />
+          Profil
         </a>
       </div>
 

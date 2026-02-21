@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { useToast } from '../contexts/ToastContext'
-import { Briefcase, Users, Star, CreditCard, AlertTriangle, Info, Activity, ChevronRight } from 'lucide-react'
+import { Briefcase, Users, Star, CreditCard, AlertTriangle, Info, Activity, ChevronRight, XCircle } from 'lucide-react'
 import { SkeletonKPI, SkeletonCard } from '../components/Skeleton'
 import EmptyState from '../components/EmptyState'
 import { formatCurrency, formatNumber, formatDate, daysRemaining } from '../lib/format'
@@ -29,6 +29,7 @@ export default function Overview() {
   const [contacts, setContacts] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const { showToast } = useToast()
+  const [welcomeDismissed, setWelcomeDismissed] = useState(() => localStorage.getItem('portal_welcome_dismissed') === '1')
 
   useEffect(() => {
     if (!client) return
@@ -79,6 +80,22 @@ export default function Overview() {
         <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-sm text-gray-500 mt-1">Ihre Kampagnen und Aktivitäten auf einen Blick.</p>
       </div>
+
+      {/* Welcome Banner */}
+      {!welcomeDismissed && (
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5 relative">
+          <button onClick={() => { setWelcomeDismissed(true); localStorage.setItem('portal_welcome_dismissed', '1') }} className="absolute top-3 right-3 text-blue-300 hover:text-blue-500">
+            <XCircle size={20} />
+          </button>
+          <p className="text-base font-semibold text-gray-900 mb-1">👋 Willkommen in Ihrem Recruiting-Portal!</p>
+          <p className="text-sm text-gray-600 mb-4">Hier haben Sie jederzeit Zugriff auf Ihre Kampagnen, Bewerber und Berichte. Alles ist bereits für Sie eingerichtet.</p>
+          <div className="flex flex-wrap gap-3">
+            <button onClick={() => setSearchParams({ tab: 'campaigns' })} className="text-sm text-[#3572E8] hover:underline font-medium">Kampagnen ansehen</button>
+            <button onClick={() => setSearchParams({ tab: 'applicants' })} className="text-sm text-[#3572E8] hover:underline font-medium">Bewerber ansehen</button>
+            <a href="/settings" className="text-sm text-[#3572E8] hover:underline font-medium">Einstellungen</a>
+          </div>
+        </div>
+      )}
 
       <AnnouncementBanner />
 

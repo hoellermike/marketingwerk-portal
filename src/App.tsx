@@ -11,6 +11,7 @@ import Applicants from './pages/Applicants'
 import Credits from './pages/Credits'
 import Resources from './pages/Resources'
 import Settings from './pages/Settings'
+import Profile from './pages/Profile'
 
 export default function App() {
   return (
@@ -20,6 +21,14 @@ export default function App() {
       <ErrorBoundary>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/settings/:category?"
             element={
