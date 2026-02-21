@@ -2,10 +2,12 @@ import { useEffect, useMemo, useState, useCallback } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import CampaignCard from '../components/CampaignCard'
-import { formatDate } from '../lib/format'
+import { formatDate, formatCurrency, formatNumber } from '../lib/format'
+import { exportData, formatDateExport } from '../lib/export'
+import ExportModal from '../components/ExportModal'
 import BriefingWizard from '../components/BriefingWizard'
 import CampaignCalendar from '../components/CampaignCalendar'
-import { Plus, List, Calendar } from 'lucide-react'
+import { Plus, List, Calendar, Download } from 'lucide-react'
 
 export interface JobCampaign {
   id: string
@@ -55,6 +57,32 @@ export default function Campaigns() {
   const [campaigns, setCampaigns] = useState<JobCampaign[]>([])
   const [showWizard, setShowWizard] = useState(false)
   const [view, setView] = useState<'list' | 'calendar'>('list')
+  const [showExport, setShowExport] = useState(false)
+
+  const handleExport = (format: 'xlsx' | 'csv') => {
+    const headers: Record<string, string> = {
+      jobtitel: 'Kampagne',
+      status: 'Status',
+      start_date: 'Start',
+      end_date: 'Ende',
+      total_leads: 'Bewerbungen',
+      qualified_leads: 'Qualifiziert',
+      total_spend: 'Ausgaben (€)',
+      cpl: 'CPL (€)',
+      cpql: 'CPQL (€)',
+    }
+    const rows = campaigns.map(c => ({
+      ...c,
+      start_date: formatDateExport(c.start_date),
+      end_date: formatDateExport(c.end_date),
+    }))
+    const today = new Date().toISOString().slice(0, 10)
+    exportData(rows, headers, {
+      filename: `${client?.company_name || 'Export'}_Kampagnen_${today}.${format}`,
+      sheetName: 'Kampagnen',
+      format,
+    })
+  }
 
   const fetchCampaigns = useCallback(() => {
     if (!client) return
@@ -103,6 +131,9 @@ export default function Campaigns() {
           </div>
           <button onClick={() => setShowWizard(true)} className="flex items-center gap-1.5 px-4 py-2 bg-[#3572E8] text-white rounded-lg text-sm font-medium hover:bg-[#2860d0] transition-colors">
             <Plus size={16} /> Neue Kampagne anfragen
+          </button>
+          <button onClick={() => setShowExport(true)} className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-700 rounded-lg px-3 py-2 hover:bg-gray-50 transition-colors">
+            <Download size={14} /> Exportieren
           </button>
         </div>
         <div className="flex items-center gap-3">
@@ -155,6 +186,14 @@ export default function Campaigns() {
         )}
       </div>
       </>)}
+
+      {showExport && (
+        <ExportModal
+          onClose={() => setShowExport(false)}
+          onExport={handleExport}
+          title="Kampagnen exportieren"
+        />
+      )}
     </div>
   )
 }

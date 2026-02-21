@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { CreditCard, TrendingDown, Info, ExternalLink } from 'lucide-react'
+import { CreditCard, TrendingDown, Info, ExternalLink, Download } from 'lucide-react'
 import KPICard from '../components/KPICard'
 import CreditForecast from '../components/CreditForecast'
 import { formatNumber, formatDate } from '../lib/format'
+import { exportData, formatDateExport } from '../lib/export'
+import ExportModal from '../components/ExportModal'
 
 interface CreditTransaction {
   id: string
@@ -18,6 +20,27 @@ interface CreditTransaction {
 export default function Credits() {
   const { client } = useAuth()
   const [txns, setTxns] = useState<CreditTransaction[]>([])
+  const [showExport, setShowExport] = useState(false)
+
+  const handleExport = (format: 'xlsx' | 'csv') => {
+    const headers: Record<string, string> = {
+      date: 'Datum',
+      description: 'Beschreibung',
+      type: 'Typ',
+      amount: 'Credits',
+    }
+    const rows = txns.map(t => ({
+      ...t,
+      date: formatDateExport(t.date),
+      type: t.type === 'credit' || t.amount > 0 ? 'Gutschrift' : 'Verbrauch',
+    }))
+    const today = new Date().toISOString().slice(0, 10)
+    exportData(rows, headers, {
+      filename: `${client?.company_name || 'Export'}_Credits_${today}.${format}`,
+      sheetName: 'Credits',
+      format,
+    })
+  }
 
   useEffect(() => {
     if (!client) return
@@ -48,7 +71,12 @@ export default function Credits() {
 
       {txns.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Transaktionsverlauf</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-900">Transaktionsverlauf</h2>
+            <button onClick={() => setShowExport(true)} className="flex items-center gap-1.5 text-xs font-medium border border-gray-200 text-gray-700 rounded-lg px-3 py-2 hover:bg-gray-50 transition-colors">
+              <Download size={14} /> Exportieren
+            </button>
+          </div>
           <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
@@ -92,6 +120,14 @@ export default function Credits() {
             </table>
           </div>
         </div>
+      )}
+
+      {showExport && (
+        <ExportModal
+          onClose={() => setShowExport(false)}
+          onExport={handleExport}
+          title="Credits exportieren"
+        />
       )}
     </div>
   )
