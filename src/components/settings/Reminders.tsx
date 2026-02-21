@@ -49,7 +49,7 @@ export default function Reminders() {
 
       <div className="space-y-3">
         {reminders.map(r => (
-          <div key={r.id} className="bg-white border border-gray-100 rounded-2xl p-4 flex items-start gap-4">
+          <div key={r.id} className="bg-white border border-gray-100 rounded-xl p-4 flex items-start gap-4">
             <Toggle enabled={r.is_active} onChange={v => toggle(r.id, v)} />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900">{r.name}</p>

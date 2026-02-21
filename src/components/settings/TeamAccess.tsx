@@ -70,7 +70,7 @@ export default function TeamAccess() {
         </button>
       </div>
 
-      <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100">
@@ -108,7 +108,7 @@ export default function TeamAccess() {
 
       {showInvite && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setShowInvite(false)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-900">Teammitglied einladen</h3>
               <button onClick={() => setShowInvite(false)}><X size={18} className="text-gray-400" /></button>

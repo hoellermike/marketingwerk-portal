@@ -97,12 +97,12 @@ export default function ApplicantTimeline({ applicationId }: Props) {
           onChange={e => setComment(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && sendMessage()}
           placeholder="Kommentar schreiben…"
-          className="flex-1 text-sm rounded-xl border border-card-border px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+          className="flex-1 text-sm rounded-xl border border-gray-100 px-3 py-2.5 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-[#3572E8]"
         />
         <button
           onClick={sendMessage}
           disabled={!comment.trim() || sending}
-          className="px-3 py-2.5 bg-accent text-white rounded-xl hover:bg-accent/90 transition-colors disabled:opacity-50"
+          className="px-3 py-2.5 bg-[#3572E8] text-white rounded-xl hover:bg-[#3572E8]/90 transition-colors disabled:opacity-50"
         >
           <Send size={16} />
         </button>
@@ -122,8 +122,8 @@ export default function ApplicantTimeline({ applicationId }: Props) {
               const isClient = msg.sender_type === 'client'
               return (
                 <div key={`msg-${msg.id}`} className={`flex ${isClient ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 ${
-                    isClient ? 'bg-accent text-white' : 'bg-gray-100 text-gray-900'
+                  <div className={`max-w-[80%] rounded-xl px-4 py-2.5 ${
+                    isClient ? 'bg-[#3572E8] text-white' : 'bg-gray-100 text-gray-900'
                   }`}>
                     {!isClient && msg.sender_name && (
                       <p className="text-[10px] font-medium text-gray-500 mb-0.5">{msg.sender_name}</p>

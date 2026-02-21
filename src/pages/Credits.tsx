@@ -49,10 +49,10 @@ export default function Credits() {
       {txns.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-gray-900 mb-3">Transaktionsverlauf</h2>
-          <div className="bg-white rounded-2xl border border-card-border shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-card-border text-left text-xs text-gray-500">
+                <tr className="border-b border-gray-100 text-left text-xs text-gray-500">
                   <th className="px-5 py-3.5 font-medium">Datum</th>
                   <th className="px-5 py-3.5 font-medium">Beschreibung</th>
                   <th className="px-5 py-3.5 font-medium text-center">Typ</th>
@@ -64,7 +64,7 @@ export default function Credits() {
                 {txns.map(t => {
                   const isCredit = t.type === 'credit' || t.amount > 0
                   return (
-                    <tr key={t.id} className="hover:bg-content-bg/50 transition-colors">
+                    <tr key={t.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-5 py-3.5 text-gray-500">{formatDate(t.date)}</td>
                       <td className="px-5 py-3.5 text-gray-900">{t.description}</td>
                       <td className="px-5 py-3.5 text-center">
@@ -80,7 +80,7 @@ export default function Credits() {
                       </td>
                       <td className="px-5 py-3.5 text-center">
                         {t.invoice_url ? (
-                          <a href={t.invoice_url} target="_blank" rel="noopener noreferrer" className="text-accent hover:text-accent/80">
+                          <a href={t.invoice_url} target="_blank" rel="noopener noreferrer" className="text-[#3572E8] hover:text-[#3572E8]/80">
                             <ExternalLink size={14} className="inline" />
                           </a>
                         ) : null}

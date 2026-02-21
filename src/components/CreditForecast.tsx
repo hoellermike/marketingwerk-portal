@@ -23,7 +23,7 @@ export default function CreditForecast({ creditsAvailable, transactions }: Props
 
   if (weeksLeft === null || weeklyBurn === 0) {
     color = 'text-gray-500'
-    bgColor = 'bg-content-bg'
+    bgColor = 'bg-gray-50'
     icon = TrendingUp
     text = 'Aktuell kein Verbrauch — Prognose nicht verfügbar'
   } else if (weeksLeft > 4) {
@@ -47,7 +47,7 @@ export default function CreditForecast({ creditsAvailable, transactions }: Props
   const Icon = icon
 
   return (
-    <div className={`rounded-2xl border border-card-border shadow-sm p-4 ${bgColor}`}>
+    <div className={`rounded-xl border border-gray-100 p-4 ${bgColor}`}>
       <div className="flex items-start gap-3">
         <Icon size={18} className={`mt-0.5 shrink-0 ${color}`} />
         <div className="space-y-2">

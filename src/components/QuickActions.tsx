@@ -29,7 +29,7 @@ export default function QuickActions() {
             href={(client as any)[a.key]}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-start gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
+            className="flex items-start gap-3 rounded-xl border border-gray-100 bg-white p-5 hover:border-[#3572E8]/40 hover:shadow-md transition-all"
           >
             <div className="p-2 rounded-xl bg-gray-50 text-[#3572E8]">
               <a.icon size={20} />

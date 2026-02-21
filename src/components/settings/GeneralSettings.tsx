@@ -44,7 +44,7 @@ export default function GeneralSettings() {
   if (loading || !s) return <div className="text-gray-400 p-8">Laden...</div>
 
   const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
-    <div className="bg-white border border-gray-100 rounded-2xl p-5 mb-4">
+    <div className="bg-white border border-gray-100 rounded-xl p-5 mb-4">
       <h3 className="text-sm font-semibold text-gray-900 mb-4">{title}</h3>
       <div className="space-y-4">{children}</div>
     </div>

@@ -37,7 +37,7 @@ export default function AccountTeam() {
         {contacts.map(c => {
           const initials = c.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
           return (
-            <div key={c.id} className="flex items-center gap-3 rounded-2xl border border-card-border bg-white p-5 shadow-sm">
+            <div key={c.id} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-5">
               <div className="w-10 h-10 rounded-full bg-gray-50 text-[#3572E8] flex items-center justify-center text-sm font-bold shrink-0">
                 {initials}
               </div>

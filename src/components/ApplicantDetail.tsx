@@ -56,7 +56,7 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate }:
       {/* Panel */}
       <div className="fixed inset-y-0 right-0 w-full max-w-[520px] bg-white z-50 shadow-2xl flex flex-col animate-slide-in">
         {/* Header */}
-        <div className="px-6 py-5 border-b border-card-border shrink-0">
+        <div className="px-6 py-5 border-b border-gray-100 shrink-0">
           <div className="flex items-start justify-between">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
@@ -93,7 +93,7 @@ export default function ApplicantDetail({ application: app, onClose, onUpdate }:
                 onClick={() => setActiveTab(tab)}
                 className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                   activeTab === tab
-                    ? 'text-accent border-b-2 border-accent'
+                    ? 'text-[#3572E8] border-b-2 border-[#3572E8]'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
               >
@@ -124,12 +124,12 @@ function ProfileTab({ app }: { app: ApplicationDetail }) {
       {app.kontaktdaten_freigeben && (app.telefon || app.email || app.wohnort) && (
         <Section title="Kontaktdaten">
           {app.telefon && (
-            <a href={`tel:${app.telefon}`} className="flex items-center gap-2 text-sm text-accent hover:underline">
+            <a href={`tel:${app.telefon}`} className="flex items-center gap-2 text-sm text-[#3572E8] hover:underline">
               <Phone size={14} /> {app.telefon}
             </a>
           )}
           {app.email && (
-            <a href={`mailto:${app.email}`} className="flex items-center gap-2 text-sm text-accent hover:underline">
+            <a href={`mailto:${app.email}`} className="flex items-center gap-2 text-sm text-[#3572E8] hover:underline">
               <Mail size={14} /> {app.email}
             </a>
           )}
@@ -153,7 +153,7 @@ function ProfileTab({ app }: { app: ApplicationDetail }) {
 
       {/* MW Einschätzung */}
       {app.mw_einschaetzung && (
-        <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+        <div className="bg-gray-50 rounded-xl p-4 border border-gray-100">
           <p className="text-xs font-semibold text-blue-700 mb-1">marketingwerk-Einschätzung</p>
           <p className="text-sm text-gray-700">{app.mw_einschaetzung}</p>
         </div>
@@ -194,7 +194,7 @@ function DocumentsTab({ urls }: { urls: string[] | null }) {
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-3 p-3 rounded-xl border border-card-border hover:border-accent/40 hover:shadow-sm transition-all"
+            className="flex items-center gap-3 p-3 rounded-xl border border-gray-100 hover:border-[#3572E8]/40 hover:shadow-sm transition-all"
           >
             <div className="p-2 rounded-lg bg-red-50 text-red-500">
               <FileText size={16} />

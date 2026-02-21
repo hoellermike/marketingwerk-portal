@@ -66,7 +66,7 @@ export function CampaignReportButton({ campaign }: { campaign: JobCampaign }) {
   return (
     <button
       onClick={generate}
-      className="inline-flex items-center gap-1 text-xs font-medium border border-card-border text-gray-600 rounded-lg px-3 py-1.5 hover:bg-content-bg transition-colors"
+      className="inline-flex items-center gap-1 text-xs font-medium border border-gray-100 text-gray-600 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors"
     >
       <FileDown size={14} /> Report ↓
     </button>
@@ -138,7 +138,7 @@ export function MonthlyReportButton({ campaigns }: { campaigns: JobCampaign[] })
   return (
     <button
       onClick={generate}
-      className="inline-flex items-center gap-1 text-xs font-medium border border-accent text-accent rounded-lg px-3 py-1.5 hover:bg-accent/5 transition-colors"
+      className="inline-flex items-center gap-1 text-xs font-medium border border-[#3572E8] text-[#3572E8] rounded-lg px-3 py-1.5 hover:bg-[#3572E8]/5 transition-colors"
     >
       <FileDown size={14} /> Monatsreport ↓
     </button>

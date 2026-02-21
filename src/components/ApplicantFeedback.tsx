@@ -41,7 +41,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
   // Not yet presented — show waiting message
   if (!isVorgestellt && !hasFeedback) {
     return (
-      <div className="flex items-center gap-3 bg-gray-50 rounded-2xl p-5">
+      <div className="flex items-center gap-3 bg-gray-50 rounded-xl p-5">
         <Clock size={18} className="text-blue-500 shrink-0" />
         <div>
           <p className="text-sm font-medium text-gray-900">Dieser Bewerber wird noch geprüft</p>
@@ -55,7 +55,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
   if (hasFeedback || saved) {
     return (
       <div className="space-y-4">
-        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-2">
+        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-2">
           <Check size={16} className="text-emerald-600" />
           <span className="text-sm text-emerald-700 font-medium">
             Feedback abgegeben am {formatDate(application.feedback_datum || new Date().toISOString())}
@@ -117,7 +117,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
               key={opt.value}
               onClick={() => setInteresse(opt.value)}
               className={`flex flex-col items-center gap-1 p-3 rounded-xl border-2 transition-all ${
-                interesse === opt.value ? opt.active : 'border-card-border text-gray-500 hover:bg-content-bg'
+                interesse === opt.value ? opt.active : 'border-gray-100 text-gray-500 hover:bg-gray-50'
               }`}
             >
               <span className="text-xl">{opt.emoji}</span>
@@ -146,7 +146,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
           value={positiv}
           onChange={e => setPositiv(e.target.value)}
           rows={2}
-          className="w-full text-sm rounded-xl border border-card-border p-3 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+          className="w-full text-sm rounded-xl border border-gray-100 p-3 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-[#3572E8]"
           placeholder="Stärken, Qualifikationen, Erfahrung…"
         />
       </div>
@@ -158,7 +158,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
           value={negativ}
           onChange={e => setNegativ(e.target.value)}
           rows={2}
-          className="w-full text-sm rounded-xl border border-card-border p-3 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+          className="w-full text-sm rounded-xl border border-gray-100 p-3 bg-white resize-none focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-[#3572E8]"
           placeholder="Fehlende Erfahrung, Bedenken…"
         />
       </div>
@@ -169,7 +169,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
         <select
           value={schritt}
           onChange={e => setSchritt(e.target.value)}
-          className="w-full text-sm rounded-xl border border-card-border p-3 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent"
+          className="w-full text-sm rounded-xl border border-gray-100 p-3 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-[#3572E8]"
         >
           <option value="">Bitte wählen…</option>
           {schrittOptions.map(opt => (
@@ -181,7 +181,7 @@ export default function ApplicantFeedback({ application, onFeedbackSaved }: Prop
       <button
         onClick={handleSubmit}
         disabled={!canSubmit}
-        className="w-full text-sm font-medium bg-accent text-white px-4 py-2.5 rounded-xl hover:bg-accent/90 transition-colors disabled:opacity-50"
+        className="w-full text-sm font-medium bg-[#3572E8] text-white px-4 py-2.5 rounded-xl hover:bg-[#3572E8]/90 transition-colors disabled:opacity-50"
       >
         {saving ? 'Wird gespeichert…' : 'Feedback absenden'}
       </button>

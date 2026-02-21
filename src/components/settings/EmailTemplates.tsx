@@ -71,7 +71,7 @@ export default function EmailTemplates() {
   return (
     <div className="flex gap-6 h-[calc(100vh-280px)] min-h-[500px]">
       {/* Left: Template list */}
-      <div className="w-64 shrink-0 bg-white border border-gray-100 rounded-2xl overflow-y-auto">
+      <div className="w-64 shrink-0 bg-white border border-gray-100 rounded-xl overflow-y-auto">
         {Object.entries(grouped).map(([group, items]) => items.length > 0 && (
           <div key={group}>
             <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 px-4 pt-4 pb-1">{group}</p>
@@ -87,7 +87,7 @@ export default function EmailTemplates() {
 
       {/* Right: Editor */}
       {selected && (
-        <div className="flex-1 flex flex-col bg-white border border-gray-100 rounded-2xl p-6 overflow-y-auto">
+        <div className="flex-1 flex flex-col bg-white border border-gray-100 rounded-xl p-6 overflow-y-auto">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">{selected.name}</h3>
             <div className="flex items-center gap-4">

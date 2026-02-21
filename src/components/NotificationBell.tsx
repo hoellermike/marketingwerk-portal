@@ -81,8 +81,8 @@ export default function NotificationBell({ onNavigate }: Props) {
       </button>
 
       {open && (
-        <div className="absolute left-full ml-2 bottom-0 w-72 bg-white rounded-xl shadow-lg border border-card-border z-50 overflow-hidden">
-          <div className="px-4 py-3 border-b border-card-border">
+        <div className="absolute left-full ml-2 bottom-0 w-72 bg-white rounded-xl shadow-lg border border-gray-100 z-50 overflow-hidden">
+          <div className="px-4 py-3 border-b border-gray-100">
             <p className="text-sm font-semibold text-gray-900">Benachrichtigungen</p>
           </div>
           {notifications.length === 0 ? (
@@ -93,7 +93,7 @@ export default function NotificationBell({ onNavigate }: Props) {
                 <button
                   key={n.id}
                   onClick={() => markRead(n)}
-                  className={`w-full text-left px-4 py-3 hover:bg-content-bg transition-colors border-b border-card-border last:border-0 ${!n.read ? 'bg-gray-50/30' : ''}`}
+                  className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-0 ${!n.read ? 'bg-gray-50/30' : ''}`}
                 >
                   <p className="text-sm text-gray-900 font-medium">{n.title}</p>
                   {n.body && <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{n.body}</p>}

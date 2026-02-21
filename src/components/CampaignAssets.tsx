@@ -36,7 +36,7 @@ export default function CampaignAssets({ creativeUrls, headline, primaryText, ct
                 <button
                   key={i}
                   onClick={() => setLightbox(url)}
-                  className="aspect-square rounded-xl overflow-hidden border border-card-border hover:opacity-90 transition-opacity"
+                  className="aspect-square rounded-xl overflow-hidden border border-gray-100 hover:opacity-90 transition-opacity"
                 >
                   <img src={url} alt={`Creative ${i + 1}`} className="w-full h-full object-cover" />
                 </button>
@@ -46,7 +46,7 @@ export default function CampaignAssets({ creativeUrls, headline, primaryText, ct
 
           {/* Ad preview */}
           {hasText && (
-            <div className="rounded-xl border border-card-border p-4 bg-white space-y-2">
+            <div className="rounded-xl border border-gray-100 p-4 bg-white space-y-2">
               {headline && <p className="text-sm font-bold text-gray-900">{headline}</p>}
               {primaryText && <p className="text-xs text-gray-600 leading-relaxed">{primaryText}</p>}
               {cta && (
@@ -72,7 +72,7 @@ export default function CampaignAssets({ creativeUrls, headline, primaryText, ct
             >
               <X size={16} />
             </button>
-            <img src={lightbox} alt="Creative" className="rounded-2xl max-h-[80vh] object-contain" />
+            <img src={lightbox} alt="Creative" className="rounded-xl max-h-[80vh] object-contain" />
           </div>
         </div>
       )}

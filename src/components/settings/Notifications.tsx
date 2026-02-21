@@ -61,7 +61,7 @@ export default function Notifications() {
       <h2 className="text-lg font-semibold text-gray-900 mb-1">Benachrichtigungen</h2>
       <p className="text-sm text-gray-500 mb-6">Wählen Sie, wie Sie benachrichtigt werden möchten</p>
 
-      <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden">
+      <div className="bg-white border border-gray-100 rounded-xl overflow-hidden">
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-100">
@@ -88,7 +88,7 @@ export default function Notifications() {
         </table>
       </div>
 
-      <div className="mt-6 bg-white border border-gray-100 rounded-2xl p-5">
+      <div className="mt-6 bg-white border border-gray-100 rounded-xl p-5">
         <h3 className="text-sm font-semibold text-gray-900 mb-3">E-Mail-Zusammenfassung</h3>
         <div className="flex gap-3">
           {[{ v: 'instant', l: 'Sofort' }, { v: 'digest', l: 'Täglich' }, { v: 'off', l: 'Aus' }].map(o => (
@@ -100,7 +100,7 @@ export default function Notifications() {
         </div>
       </div>
 
-      <div className="mt-6 bg-white border border-gray-100 rounded-2xl p-5">
+      <div className="mt-6 bg-white border border-gray-100 rounded-xl p-5">
         <h3 className="text-sm font-semibold text-gray-900 mb-3">Ruhe-Modus</h3>
         <p className="text-xs text-gray-500 mb-3">Keine Benachrichtigungen bis zum gewählten Datum</p>
         <div className="flex items-center gap-3">

@@ -99,7 +99,7 @@ export default function Layout({ children }: Props) {
   )
 
   return (
-    <div className="min-h-screen bg-content-bg flex">
+    <div className="min-h-screen bg-gray-50 flex">
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-[250px] shrink-0 bg-navy flex-col fixed inset-y-0 left-0 z-40">
         {sidebarContent}
@@ -121,7 +121,7 @@ export default function Layout({ children }: Props) {
       {/* Main content */}
       <div className="flex-1 lg:ml-[250px] flex flex-col min-h-screen">
         {/* Mobile header */}
-        <header className="lg:hidden bg-white border-b border-card-border px-4 h-14 flex items-center gap-3 sticky top-0 z-30">
+        <header className="lg:hidden bg-white border-b border-gray-100 px-4 h-14 flex items-center gap-3 sticky top-0 z-30">
           <button onClick={() => setSidebarOpen(true)} className="text-gray-600">
             <Menu size={22} />
           </button>
@@ -134,8 +134,8 @@ export default function Layout({ children }: Props) {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-card-border bg-white py-4 text-center text-xs text-gray-400">
-          © 2026 marketingwerk · <a href="mailto:office@marketingwerk.at" className="hover:text-accent">office@marketingwerk.at</a>
+        <footer className="border-t border-gray-100 bg-white py-4 text-center text-xs text-gray-400">
+          © 2026 marketingwerk · <a href="mailto:office@marketingwerk.at" className="hover:text-[#3572E8]">office@marketingwerk.at</a>
         </footer>
       </div>
     </div>

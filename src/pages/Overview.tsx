@@ -93,14 +93,14 @@ export default function Overview() {
       {activities.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Activity size={18} className="text-accent" />
+            <Activity size={18} className="text-[#3572E8]" />
             <h2 className="text-lg font-semibold text-gray-900">Letzte Aktivitäten</h2>
           </div>
-          <div className="bg-white rounded-2xl border border-card-border shadow-sm p-5">
+          <div className="bg-white rounded-xl border border-gray-100 p-5">
             <div className="space-y-3">
               {activities.map(a => (
                 <div key={a.id} className="flex gap-3 items-start">
-                  <div className="w-2 h-2 rounded-full bg-accent mt-2 shrink-0" />
+                  <div className="w-2 h-2 rounded-full bg-[#3572E8] mt-2 shrink-0" />
                   <div>
                     <p className="text-sm text-gray-900">{a.title}</p>
                     {a.description && <p className="text-xs text-gray-500">{a.description}</p>}
@@ -110,7 +110,7 @@ export default function Overview() {
             </div>
             <button
               onClick={() => {}}
-              className="text-xs text-accent hover:underline mt-3 block"
+              className="text-xs text-[#3572E8] hover:underline mt-3 block"
             >
               Mehr anzeigen →
             </button>
@@ -122,13 +122,13 @@ export default function Overview() {
       {campaigns.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Briefcase size={18} className="text-accent" />
+            <Briefcase size={18} className="text-[#3572E8]" />
             <h2 className="text-lg font-semibold text-gray-900">Kampagnen</h2>
           </div>
-          <div className="bg-white rounded-2xl border border-card-border shadow-sm overflow-hidden">
+          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-card-border text-left text-xs text-gray-500">
+                <tr className="border-b border-gray-100 text-left text-xs text-gray-500">
                   <th className="px-5 py-3.5 font-medium">Kampagne</th>
                   <th className="px-5 py-3.5 font-medium">Status</th>
                   <th className="px-5 py-3.5 font-medium text-right">Bewerbungen</th>
@@ -140,7 +140,7 @@ export default function Overview() {
                 {campaigns.map(c => {
                   const days = daysRemaining(c.end_date)
                   return (
-                    <tr key={c.id} className="hover:bg-content-bg/50 transition-colors">
+                    <tr key={c.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-5 py-3.5 font-medium text-gray-900 truncate max-w-[200px]">{c.jobtitel}</td>
                       <td className="px-5 py-3.5"><StatusBadge status={c.status} /></td>
                       <td className="px-5 py-3.5 text-right text-gray-600">{formatNumber(c.total_leads)}</td>
@@ -160,10 +160,10 @@ export default function Overview() {
       {/* Account Info + Team — combined */}
       <div>
         <div className="flex items-center gap-2 mb-3">
-          <Info size={18} className="text-accent" />
+          <Info size={18} className="text-[#3572E8]" />
           <h3 className="text-lg font-semibold text-gray-900">Account & Team</h3>
         </div>
-        <div className="bg-white rounded-2xl border border-card-border shadow-sm p-6">
+        <div className="bg-white rounded-xl border border-gray-100 p-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Account info */}
             <div className="space-y-3 text-sm">
@@ -187,7 +187,7 @@ export default function Overview() {
                         {c.role && <p className="text-xs text-gray-500">{c.role}</p>}
                       </div>
                       {c.email && (
-                        <a href={`mailto:${c.email}`} className="text-xs text-accent hover:underline">
+                        <a href={`mailto:${c.email}`} className="text-xs text-[#3572E8] hover:underline">
                           <ChevronRight size={14} />
                         </a>
                       )}

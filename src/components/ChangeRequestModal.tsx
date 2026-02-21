@@ -44,8 +44,8 @@ export default function ChangeRequestModal({ campaignId, campaignTitle, onClose 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4" onClick={onClose}>
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-md" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-5 border-b border-card-border">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-md" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-5 border-b border-gray-100">
           <h2 className="text-sm font-semibold text-gray-900">Änderung anfragen</h2>
           <button onClick={onClose} className="text-gray-400 hover:text-gray-600"><X size={18} /></button>
         </div>
@@ -56,13 +56,13 @@ export default function ChangeRequestModal({ campaignId, campaignTitle, onClose 
               <Check size={20} className="text-emerald-600" />
             </div>
             <p className="text-sm text-gray-700">Ihre Änderungsanfrage wurde übermittelt. Ihr Account Manager meldet sich innerhalb von 24h.</p>
-            <button onClick={onClose} className="text-xs text-accent hover:underline">Schließen</button>
+            <button onClick={onClose} className="text-xs text-[#3572E8] hover:underline">Schließen</button>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="p-5 space-y-4">
             <div>
               <label className="text-xs font-medium text-gray-600 mb-1 block">Kampagne</label>
-              <input value={campaignTitle} disabled className="w-full text-sm rounded-xl border border-card-border p-2.5 bg-content-bg text-gray-500" />
+              <input value={campaignTitle} disabled className="w-full text-sm rounded-xl border border-gray-100 p-2.5 bg-gray-50 text-gray-500" />
             </div>
 
             <div>
@@ -71,7 +71,7 @@ export default function ChangeRequestModal({ campaignId, campaignTitle, onClose 
                 value={art}
                 onChange={e => setArt(e.target.value)}
                 required
-                className="w-full text-sm rounded-xl border border-card-border p-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full text-sm rounded-xl border border-gray-100 p-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-accent"
               >
                 <option value="">Bitte wählen…</option>
                 {artOptions.map(o => <option key={o} value={o}>{o}</option>)}
@@ -84,7 +84,7 @@ export default function ChangeRequestModal({ campaignId, campaignTitle, onClose 
                 type="date"
                 value={datum}
                 onChange={e => setDatum(e.target.value)}
-                className="w-full text-sm rounded-xl border border-card-border p-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full text-sm rounded-xl border border-gray-100 p-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-accent"
               />
             </div>
 
@@ -95,7 +95,7 @@ export default function ChangeRequestModal({ campaignId, campaignTitle, onClose 
                 onChange={e => setDetails(e.target.value)}
                 required
                 rows={3}
-                className="w-full text-sm rounded-xl border border-card-border p-2.5 bg-white resize-none focus:outline-none focus:ring-1 focus:ring-accent"
+                className="w-full text-sm rounded-xl border border-gray-100 p-2.5 bg-white resize-none focus:outline-none focus:ring-1 focus:ring-accent"
                 placeholder="Beschreiben Sie die gewünschte Änderung…"
               />
             </div>
@@ -103,7 +103,7 @@ export default function ChangeRequestModal({ campaignId, campaignTitle, onClose 
             <button
               type="submit"
               disabled={saving || !art || !details}
-              className="w-full text-sm font-medium bg-accent text-white py-2.5 rounded-xl hover:bg-accent/90 transition-colors disabled:opacity-50"
+              className="w-full text-sm font-medium bg-[#3572E8] text-white py-2.5 rounded-xl hover:bg-[#3572E8]/90 transition-colors disabled:opacity-50"
             >
               {saving ? 'Wird gesendet…' : 'Anfrage absenden'}
             </button>

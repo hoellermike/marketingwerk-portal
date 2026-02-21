@@ -94,7 +94,7 @@ export default function Automations() {
 
       <div className="space-y-3">
         {standard.map(a => (
-          <div key={a.id} className="bg-white border border-gray-100 rounded-2xl p-4 flex items-center gap-4">
+          <div key={a.id} className="bg-white border border-gray-100 rounded-xl p-4 flex items-center gap-4">
             <Toggle enabled={a.is_active} onChange={v => toggle(a.id, v)} />
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-gray-900">{a.name}</p>
@@ -114,7 +114,7 @@ export default function Automations() {
           <p className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">System-Automationen</p>
           <div className="space-y-3">
             {system.map(a => (
-              <div key={a.id} className="bg-gray-50 border border-gray-100 rounded-2xl p-4 flex items-center gap-4 opacity-75">
+              <div key={a.id} className="bg-gray-50 border border-gray-100 rounded-xl p-4 flex items-center gap-4 opacity-75">
                 <Toggle enabled={a.is_active} onChange={() => {}} disabled />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-gray-700 flex items-center gap-2">{a.name} <Lock size={12} className="text-gray-400" /></p>
@@ -133,7 +133,7 @@ export default function Automations() {
       {/* Wizard modal */}
       {wizard && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center" onClick={() => setWizard(null)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
+          <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-900">Neue Automation – Schritt {wizard.step}/3</h3>
               <button onClick={() => setWizard(null)}><X size={18} className="text-gray-400" /></button>

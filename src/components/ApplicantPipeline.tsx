@@ -133,8 +133,8 @@ export default function ApplicantPipeline({ campaignId }: Props) {
               onClick={() => setFilter(chip)}
               className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors ${
                 filter === chip
-                  ? 'bg-accent text-white border-accent'
-                  : 'border-card-border text-gray-500 hover:bg-content-bg'
+                  ? 'bg-[#3572E8] text-white border-[#3572E8]'
+                  : 'border-gray-100 text-gray-500 hover:bg-gray-50'
               }`}
             >
               {chip} ({count})
@@ -151,7 +151,7 @@ export default function ApplicantPipeline({ campaignId }: Props) {
           const isFeedbackOpen = feedbackOpen === app.id
 
           return (
-            <div key={app.id} className="bg-white rounded-xl border border-card-border p-3 space-y-2">
+            <div key={app.id} className="bg-white rounded-xl border border-gray-100 p-3 space-y-2">
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="text-sm font-medium text-gray-900">
                   {app.vorname || `Bewerber #${app.applicant_number}`}
@@ -179,7 +179,7 @@ export default function ApplicantPipeline({ campaignId }: Props) {
                 {showFeedback && !app.feedback_datum && (
                   <button
                     onClick={() => setFeedbackOpen(isFeedbackOpen ? null : app.id)}
-                    className="ml-auto inline-flex items-center gap-1 text-[11px] font-medium text-accent hover:underline"
+                    className="ml-auto inline-flex items-center gap-1 text-[11px] font-medium text-[#3572E8] hover:underline"
                   >
                     <MessageSquarePlus size={12} />
                     Feedback geben

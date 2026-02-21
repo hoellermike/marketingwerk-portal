@@ -94,7 +94,7 @@ export default function Applicants() {
         <select
           value={campaignFilter}
           onChange={e => setCampaignFilter(e.target.value)}
-          className="text-sm rounded-xl border border-card-border px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30"
+          className="text-sm rounded-xl border border-gray-100 px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30"
         >
           <option value="">Alle Kampagnen</option>
           {campaigns.map(c => (
@@ -112,8 +112,8 @@ export default function Applicants() {
                 onClick={() => setStatusFilter(chip)}
                 className={`text-xs px-3 py-1.5 rounded-full border transition-colors ${
                   statusFilter === chip
-                    ? 'bg-accent text-white border-accent'
-                    : 'border-card-border text-gray-500 hover:bg-content-bg'
+                    ? 'bg-[#3572E8] text-white border-[#3572E8]'
+                    : 'border-gray-100 text-gray-500 hover:bg-gray-50'
                 }`}
               >
                 {chip} ({count})
@@ -128,7 +128,7 @@ export default function Applicants() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Suchen…"
-            className="text-sm rounded-xl border border-card-border pl-8 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30 w-48"
+            className="text-sm rounded-xl border border-gray-100 pl-8 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-accent/30 w-48"
           />
         </div>
       </div>
@@ -143,10 +143,10 @@ export default function Applicants() {
           <p className="text-xs text-gray-400 mt-1">Sobald die ersten Kandidaten da sind, sehen Sie sie hier.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-card-border shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-card-border text-left text-xs text-gray-500">
+              <tr className="border-b border-gray-100 text-left text-xs text-gray-500">
                 <th className="px-5 py-3.5 font-medium">Status</th>
                 <th className="px-5 py-3.5 font-medium">Bewerber</th>
                 <th className="px-5 py-3.5 font-medium hidden md:table-cell">Kampagne</th>
@@ -166,7 +166,7 @@ export default function Applicants() {
                   <tr
                     key={app.id}
                     onClick={() => setSelected(app)}
-                    className={`cursor-pointer transition-colors hover:bg-content-bg/50 ${
+                    className={`cursor-pointer transition-colors hover:bg-gray-50/50 ${
                       hasPendingFeedback ? 'bg-orange-50/50' : ''
                     }`}
                   >

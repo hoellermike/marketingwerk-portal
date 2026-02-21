@@ -52,7 +52,7 @@ export default function FeedbackWidget({ application, onFeedbackSaved }: Props) 
 
   if (saved) {
     return (
-      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center gap-2">
+      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center gap-2">
         <Check size={16} className="text-emerald-600" />
         <span className="text-sm text-emerald-700 font-medium">Danke für Ihr Feedback!</span>
       </div>
@@ -60,7 +60,7 @@ export default function FeedbackWidget({ application, onFeedbackSaved }: Props) 
   }
 
   return (
-    <div className="bg-content-bg rounded-2xl p-4 space-y-3 border border-card-border">
+    <div className="bg-gray-50 rounded-xl p-4 space-y-3 border border-gray-100">
       {readonly && (
         <p className="text-xs text-gray-400">Feedback vom {formatDate(application.feedback_datum)}</p>
       )}
@@ -79,7 +79,7 @@ export default function FeedbackWidget({ application, onFeedbackSaved }: Props) 
                   ? opt === 'Ja' ? 'bg-emerald-100 border-emerald-300 text-emerald-700'
                     : opt === 'Nein' ? 'bg-red-100 border-red-300 text-red-700'
                     : 'bg-amber-100 border-amber-300 text-amber-700'
-                  : 'border-card-border text-gray-500 hover:bg-white'
+                  : 'border-gray-100 text-gray-500 hover:bg-white'
               } ${readonly ? 'opacity-70 cursor-default' : 'cursor-pointer'}`}
             >
               {opt}
@@ -113,7 +113,7 @@ export default function FeedbackWidget({ application, onFeedbackSaved }: Props) 
           onChange={e => setFeedback(e.target.value)}
           disabled={readonly}
           rows={2}
-          className="w-full text-sm rounded-xl border border-card-border p-2.5 bg-white resize-none focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-70"
+          className="w-full text-sm rounded-xl border border-gray-100 p-2.5 bg-white resize-none focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-70"
           placeholder="Ihre Einschätzung…"
         />
       </div>
@@ -125,7 +125,7 @@ export default function FeedbackWidget({ application, onFeedbackSaved }: Props) 
           value={schritt}
           onChange={e => setSchritt(e.target.value)}
           disabled={readonly}
-          className="w-full text-sm rounded-xl border border-card-border p-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-70"
+          className="w-full text-sm rounded-xl border border-gray-100 p-2.5 bg-white focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-70"
         >
           <option value="">Bitte wählen…</option>
           {schrittOptions.map(opt => (
@@ -138,7 +138,7 @@ export default function FeedbackWidget({ application, onFeedbackSaved }: Props) 
         <button
           onClick={handleSubmit}
           disabled={!canSubmit}
-          className="text-xs font-medium bg-accent text-white px-4 py-2 rounded-lg hover:bg-accent/90 transition-colors disabled:opacity-50"
+          className="text-xs font-medium bg-[#3572E8] text-white px-4 py-2 rounded-lg hover:bg-[#3572E8]/90 transition-colors disabled:opacity-50"
         >
           {saving ? 'Wird gespeichert…' : 'Feedback absenden'}
         </button>

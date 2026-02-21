@@ -29,7 +29,7 @@ export default function Resources() {
       {tools.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Link size={18} className="text-accent" />
+            <Link size={18} className="text-[#3572E8]" />
             <h2 className="text-lg font-semibold text-gray-900">Links & Tools</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -39,7 +39,7 @@ export default function Resources() {
                 href={t.url!}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
+                className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-5 hover:border-[#3572E8]/40 hover:shadow-md transition-all"
               >
                 <div className="p-2 rounded-xl bg-gray-50 text-[#3572E8]">
                   <t.icon size={20} />
@@ -57,7 +57,7 @@ export default function Resources() {
       {forms.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <FileText size={18} className="text-accent" />
+            <FileText size={18} className="text-[#3572E8]" />
             <h2 className="text-lg font-semibold text-gray-900">Formulare</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -67,7 +67,7 @@ export default function Resources() {
                 href={f.url!}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-3 rounded-2xl border border-card-border bg-white p-5 hover:border-accent/40 hover:shadow-md transition-all"
+                className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-5 hover:border-[#3572E8]/40 hover:shadow-md transition-all"
               >
                 <div className="p-2 rounded-xl bg-gray-50 text-[#3572E8]">
                   <f.icon size={20} />

@@ -22,7 +22,7 @@ export default function KPICard({ label, value, icon: Icon, tint, trend, subtitl
   const iconText = tint ? iconColors[tint] : 'text-[#3572E8]'
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white p-5">
+    <div className="rounded-xl border border-gray-100 bg-white p-5">
       <div className="flex items-start justify-between mb-3">
         <div className="w-9 h-9 rounded-xl flex items-center justify-center bg-gray-50">
           <Icon size={18} className={iconText} />

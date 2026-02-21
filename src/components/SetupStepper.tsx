@@ -40,7 +40,7 @@ export default function SetupStepper({ campaign }: Props) {
   const current = getCurrentStep(campaign)
 
   return (
-    <div className="bg-content-bg rounded-2xl p-4">
+    <div className="bg-gray-50 rounded-xl p-4">
       <div className="flex items-center justify-between">
         {steps.map((label, i) => {
           const step = i + 1
@@ -55,14 +55,14 @@ export default function SetupStepper({ campaign }: Props) {
                     done
                       ? 'bg-emerald-500 text-white'
                       : active
-                      ? 'bg-accent text-white animate-pulse'
+                      ? 'bg-[#3572E8] text-white animate-pulse'
                       : 'bg-gray-200 text-gray-400'
                   }`}
                 >
                   {done ? <Check size={14} /> : step}
                 </div>
                 <span className={`text-[9px] mt-1 text-center leading-tight max-w-[70px] ${
-                  done ? 'text-emerald-600 font-medium' : active ? 'text-accent font-medium' : 'text-gray-400'
+                  done ? 'text-emerald-600 font-medium' : active ? 'text-[#3572E8] font-medium' : 'text-gray-400'
                 }`}>
                   {label}
                 </span>

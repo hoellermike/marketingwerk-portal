@@ -52,7 +52,7 @@ export default function CampaignTimeline({ campaigns }: Props) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-4">
-        <CalendarDays size={18} className="text-accent" />
+        <CalendarDays size={18} className="text-[#3572E8]" />
         <h2 className="text-lg font-semibold text-gray-900">Kampagnen-Timeline</h2>
       </div>
       <div className="relative">
@@ -70,10 +70,10 @@ export default function CampaignTimeline({ campaigns }: Props) {
           {/* Today marker — blue dashed line */}
           {todayPct >= 0 && todayPct <= 100 && (
             <div
-              className="absolute top-0 bottom-0 w-px border-l-2 border-dashed border-accent z-10"
+              className="absolute top-0 bottom-0 w-px border-l-2 border-dashed border-[#3572E8] z-10"
               style={{ left: `${todayPct}%` }}
             >
-              <span className="absolute -top-5 -translate-x-1/2 text-[10px] text-accent font-medium">Heute</span>
+              <span className="absolute -top-5 -translate-x-1/2 text-[10px] text-[#3572E8] font-medium">Heute</span>
             </div>
           )}
 

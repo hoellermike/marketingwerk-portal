@@ -13,7 +13,7 @@ interface ActivityItem {
 }
 
 const iconMap: Record<string, { icon: typeof Users; bg: string; text: string }> = {
-  lead: { icon: Users, bg: 'bg-gray-50', text: 'text-accent' },
+  lead: { icon: Users, bg: 'bg-gray-50', text: 'text-[#3572E8]' },
   kpi_update: { icon: BarChart3, bg: 'bg-gray-50', text: 'text-emerald-600' },
   campaign_started: { icon: Play, bg: 'bg-gray-50', text: 'text-purple-600' },
   campaign_ended: { icon: Square, bg: 'bg-gray-100', text: 'text-gray-500' },
@@ -52,10 +52,10 @@ export default function ActivityFeed() {
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <Activity size={18} className="text-accent" />
+        <Activity size={18} className="text-[#3572E8]" />
         <h2 className="text-lg font-semibold text-gray-900">Letzte Aktivitäten</h2>
       </div>
-      <div className="bg-white rounded-2xl border border-card-border shadow-sm p-5">
+      <div className="bg-white rounded-xl border border-gray-100 p-5">
         <div className="space-y-4">
           {activities.map((a, i) => {
             const { icon: Icon, bg, text } = iconMap[a.type] || iconMap.lead
@@ -65,7 +65,7 @@ export default function ActivityFeed() {
                   <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${bg}`}>
                     <Icon size={16} className={text} />
                   </div>
-                  {i < activities.length - 1 && <div className="w-px flex-1 bg-card-border mt-1" />}
+                  {i < activities.length - 1 && <div className="w-px flex-1 bg-gray-100 mt-1" />}
                 </div>
                 <div className="min-w-0 pb-1 pt-1">
                   <p className="text-sm font-medium text-gray-900">{a.title}</p>
