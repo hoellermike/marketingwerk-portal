@@ -1,16 +1,20 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
-import { Mail, Loader2 } from 'lucide-react'
+import { Mail, Loader2, Lock } from 'lucide-react'
 
 const LOGO_URL = 'https://raw.githubusercontent.com/hoellermike/marketingwerk-portal/refs/heads/main/med_alt2%402x.png'
 
+type LoginMode = 'magic' | 'password'
+
 export default function Login() {
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [mode, setMode] = useState<LoginMode>('password')
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
     setLoading(true)
@@ -25,6 +29,19 @@ export default function Login() {
       setError(error.message)
     } else {
       setSent(true)
+    }
+  }
+
+  const handlePassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+
+    setLoading(false)
+    if (error) {
+      setError(error.message)
     }
   }
 
@@ -48,8 +65,67 @@ export default function Login() {
                 Bitte prüfe dein Postfach und klicke auf den Link.
               </p>
             </div>
+          ) : mode === 'password' ? (
+            <form onSubmit={handlePassword}>
+              <h2 className="text-lg font-semibold text-gray-900 mb-6">Anmelden</h2>
+              <div className="mb-4">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  E-Mail-Adresse
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="name@firma.at"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                />
+              </div>
+              <div className="mb-4">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+                  Passwort
+                </label>
+                <input
+                  id="password"
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent focus:border-transparent"
+                />
+              </div>
+              {error && (
+                <p className="text-red-500 text-sm mb-4">{error}</p>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-accent text-white py-2.5 rounded-lg text-sm font-medium hover:bg-accent/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    Anmelden…
+                  </>
+                ) : (
+                  <>
+                    <Lock size={16} />
+                    Anmelden
+                  </>
+                )}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMode('magic'); setError('') }}
+                className="w-full mt-3 text-sm text-gray-500 hover:text-accent transition-colors"
+              >
+                Stattdessen Magic Link verwenden
+              </button>
+            </form>
           ) : (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleMagicLink}>
               <h2 className="text-lg font-semibold text-gray-900 mb-6">Anmelden</h2>
               <div className="mb-4">
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
@@ -79,8 +155,18 @@ export default function Login() {
                     Wird gesendet…
                   </>
                 ) : (
-                  'Magic Link senden'
+                  <>
+                    <Mail size={16} />
+                    Magic Link senden
+                  </>
                 )}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setMode('password'); setError('') }}
+                className="w-full mt-3 text-sm text-gray-500 hover:text-accent transition-colors"
+              >
+                Stattdessen mit Passwort anmelden
               </button>
             </form>
           )}
