@@ -86,7 +86,10 @@ export default function NotificationBell({ onNavigate }: Props) {
             <p className="text-sm font-semibold text-gray-900">Benachrichtigungen</p>
           </div>
           {notifications.length === 0 ? (
-            <div className="px-4 py-6 text-center text-sm text-gray-400">Keine Benachrichtigungen</div>
+            <div className="px-4 py-8 text-center">
+              <Bell size={24} className="mx-auto text-gray-300 mb-2" />
+              <p className="text-sm text-gray-400">Keine neuen Benachrichtigungen</p>
+            </div>
           ) : (
             <div className="max-h-64 overflow-y-auto">
               {notifications.slice(0, 5).map(n => (

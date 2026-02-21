@@ -7,7 +7,10 @@ import { exportData, formatDateExport } from '../lib/export'
 import ExportModal from '../components/ExportModal'
 import BriefingWizard from '../components/BriefingWizard'
 import CampaignCalendar from '../components/CampaignCalendar'
-import { Plus, List, Calendar, Download } from 'lucide-react'
+import { Plus, List, Calendar, Download, Megaphone } from 'lucide-react'
+import { SkeletonStatusCards, SkeletonCard } from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
+import { useToast } from '../contexts/ToastContext'
 
 export interface JobCampaign {
   id: string
@@ -58,6 +61,8 @@ export default function Campaigns() {
   const [showWizard, setShowWizard] = useState(false)
   const [view, setView] = useState<'list' | 'calendar'>('list')
   const [showExport, setShowExport] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const { showToast } = useToast()
 
   const handleExport = (format: 'xlsx' | 'csv') => {
     const headers: Record<string, string> = {
@@ -86,12 +91,14 @@ export default function Campaigns() {
 
   const fetchCampaigns = useCallback(() => {
     if (!client) return
+    setLoading(true)
     supabase
       .from('job_campaigns')
       .select('*')
       .eq('client_id', client.id)
       .order('start_date', { ascending: false })
-      .then(({ data }) => setCampaigns(data || []))
+      .then(({ data, error }) => { if (error) showToast('Fehler beim Laden der Kampagnen', 'error'); setCampaigns(data || []) })
+      .finally(() => setLoading(false))
   }, [client])
 
   const defaultFrom = useMemo(() => {
@@ -160,7 +167,13 @@ export default function Campaigns() {
         </div>
       </div>
 
-      {view === 'calendar' ? (
+      {loading ? (
+        <>
+          <SkeletonStatusCards count={4} />
+          <SkeletonCard lines={4} />
+          <SkeletonCard lines={4} />
+        </>
+      ) : view === 'calendar' ? (
         <CampaignCalendar campaigns={campaigns} onRefresh={fetchCampaigns} />
       ) : (<>
       {/* Status Summary Cards */}
@@ -182,7 +195,7 @@ export default function Campaigns() {
           <CampaignCard key={c.id} campaign={c} defaultOpen={i === 0} dateFrom={dateFrom} dateTo={dateTo} />
         ))}
         {campaigns.length === 0 && (
-          <p className="text-sm text-gray-400 text-center py-12">Keine Kampagnen vorhanden.</p>
+          <EmptyState icon={Megaphone} title="Noch keine Kampagnen" description="Erstellen Sie Ihre erste Kampagne, um Bewerber zu gewinnen." action={{ label: 'Neue Kampagne anfragen', onClick: () => setShowWizard(true) }} />
         )}
       </div>
       </>)}

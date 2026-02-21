@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { LogOut, LayoutDashboard, Megaphone, Users, CreditCard, FolderOpen, Menu, X, Settings } from 'lucide-react'
 import NotificationBell from './NotificationBell'
+import { usePageTitle } from '../lib/usePageTitle'
 
 const LOGO_URL = 'https://raw.githubusercontent.com/hoellermike/marketingwerk-portal/refs/heads/main/med_alt2%402x.png'
 
@@ -25,6 +26,7 @@ export default function Layout({ children }: Props) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const activeTab = (searchParams.get('tab') as TabKey) || 'overview'
+  usePageTitle(activeTab)
 
   const setTab = (tab: TabKey) => {
     setSearchParams({ tab })

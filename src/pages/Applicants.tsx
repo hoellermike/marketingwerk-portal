@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { Users, ClipboardCheck, Award, AlertTriangle, UserCheck, Star, Search, ChevronRight, Inbox, Link2, Download, X } from 'lucide-react'
+import { Users, ClipboardCheck, Award, AlertTriangle, UserCheck, Star, Search, ChevronRight, Inbox, Link2, Download, X, FolderOpen } from 'lucide-react'
+import { SkeletonKPI, SkeletonTable } from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
+import { useToast } from '../contexts/ToastContext'
 import { mapStatus, filterChips, isInPruefung, isQualifiziert, needsFeedback } from '../lib/statusMap'
 import { formatDate, formatNumber } from '../lib/format'
 import { exportData, formatDateExport } from '../lib/export'
@@ -30,6 +33,8 @@ export default function Applicants() {
   // Export modal
   const [showExport, setShowExport] = useState(false)
 
+  const { showToast } = useToast()
+
   // Suggest modal
   const [suggestApp, setSuggestApp] = useState<ApplicationDetail | null>(null)
   const [suggestCampaign, setSuggestCampaign] = useState('')
@@ -50,7 +55,8 @@ export default function Applicants() {
       .eq('client_id', client.id)
       .eq('sichtbar_fuer_kunde', true)
       .order('bewerbungsdatum', { ascending: false })
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        if (error) showToast('Fehler beim Laden der Bewerber', 'error')
         setApplications((data as ApplicationDetail[]) || [])
         setLoading(false)
       })
@@ -154,8 +160,7 @@ export default function Applicants() {
     setSuggestApp(null)
     setSuggestCampaign('')
     setSuggestNote('')
-    setSuggestToast(true)
-    setTimeout(() => setSuggestToast(false), 3000)
+    showToast('Vorschlag gesendet')
   }
 
   const daysInPool = (date: string | null) => {
@@ -319,17 +324,20 @@ export default function Applicants() {
 
       {/* Table */}
       {loading ? (
-        <div className="text-center py-12 text-sm text-gray-400">Laden…</div>
+        <>
+          {view === 'active' && (
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+              {Array.from({ length: 5 }).map((_, i) => <SkeletonKPI key={i} />)}
+            </div>
+          )}
+          <SkeletonTable rows={6} cols={5} />
+        </>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-16">
-          <Inbox size={40} className="mx-auto text-gray-300 mb-3" />
-          <p className="text-sm text-gray-500 font-medium">
-            {view === 'pool' ? 'Noch keine Kandidaten im Talent Pool' : 'Noch keine Bewerbungen eingegangen'}
-          </p>
-          <p className="text-xs text-gray-400 mt-1">
-            {view === 'pool' ? 'Verschieben Sie geeignete Kandidaten hierher.' : 'Sobald die ersten Kandidaten da sind, sehen Sie sie hier.'}
-          </p>
-        </div>
+        view === 'pool' ? (
+          <EmptyState icon={FolderOpen} title="Ihr Talent Pool ist noch leer" description="Verschieben Sie interessante Kandidaten hierher, um sie für zukünftige Stellen vorzumerken." />
+        ) : (
+          <EmptyState icon={Users} title="Noch keine Bewerber" description="Sobald Bewerbungen eingehen, sehen Sie diese hier." />
+        )
       ) : view === 'active' ? (
         <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
           <table className="w-full text-sm">
@@ -606,12 +614,6 @@ export default function Applicants() {
         </>
       )}
 
-      {/* Toast */}
-      {suggestToast && (
-        <div className="fixed bottom-6 right-6 z-50 bg-gray-900 text-white text-sm px-4 py-3 rounded-xl shadow-lg">
-          ✓ Vorschlag gesendet
-        </div>
-      )}
     </div>
   )
 }

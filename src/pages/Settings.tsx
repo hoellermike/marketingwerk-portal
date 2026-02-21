@@ -10,6 +10,7 @@ import Reminders from '../components/settings/Reminders'
 import Notifications from '../components/settings/Notifications'
 import TeamAccess from '../components/settings/TeamAccess'
 import GeneralSettings from '../components/settings/GeneralSettings'
+import { usePageTitle } from '../lib/usePageTitle'
 
 const CATEGORIES = [
   { key: 'pipeline', label: 'Bewerber-Status', icon: GitBranch },
@@ -30,6 +31,7 @@ export default function Settings() {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
   const active = (category as Category) || 'pipeline'
+  usePageTitle('settings')
 
   const initial = user?.email?.[0]?.toUpperCase() || '?'
 

@@ -2,7 +2,10 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { useToast } from '../contexts/ToastContext'
 import { Briefcase, Users, Star, CreditCard, AlertTriangle, Info, Activity, ChevronRight } from 'lucide-react'
+import { SkeletonKPI, SkeletonCard } from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
 import { formatCurrency, formatNumber, formatDate, daysRemaining } from '../lib/format'
 import { needsFeedback } from '../lib/statusMap'
 import KPICard from '../components/KPICard'
@@ -24,40 +27,43 @@ export default function Overview() {
   const [feedbackCount, setFeedbackCount] = useState(0)
   const [activities, setActivities] = useState<any[]>([])
   const [contacts, setContacts] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const { showToast } = useToast()
 
   useEffect(() => {
     if (!client) return
-    supabase
-      .from('job_campaigns')
-      .select('*')
-      .eq('client_id', client.id)
-      .order('start_date', { ascending: false })
-      .then(({ data }) => setCampaigns((data as JobCampaign[]) || []))
-
-    supabase
-      .from('applications')
-      .select('id, status, feedback_datum')
-      .eq('client_id', client.id)
-      .eq('sichtbar_fuer_kunde', true)
-      .then(({ data }) => {
-        const apps = (data as SimpleApplication[]) || []
-        setFeedbackCount(apps.filter(a => needsFeedback(a.status, a.feedback_datum)).length)
-      })
-
-    supabase
-      .from('activity_feed')
-      .select('*')
-      .eq('client_id', client.id)
-      .order('created_at', { ascending: false })
-      .limit(3)
-      .then(({ data }) => setActivities(data || []))
-
-    supabase
-      .from('contacts')
-      .select('*')
-      .eq('client_id', client.id)
-      .order('sort_order')
-      .then(({ data }) => setContacts(data || []))
+    setLoading(true)
+    Promise.all([
+      supabase
+        .from('job_campaigns')
+        .select('*')
+        .eq('client_id', client.id)
+        .order('start_date', { ascending: false })
+        .then(({ data, error }) => { if (error) showToast('Fehler beim Laden der Kampagnen', 'error'); setCampaigns((data as JobCampaign[]) || []) }),
+      supabase
+        .from('applications')
+        .select('id, status, feedback_datum')
+        .eq('client_id', client.id)
+        .eq('sichtbar_fuer_kunde', true)
+        .then(({ data, error }) => {
+          if (error) showToast('Fehler beim Laden der Bewerbungen', 'error')
+          const apps = (data as SimpleApplication[]) || []
+          setFeedbackCount(apps.filter(a => needsFeedback(a.status, a.feedback_datum)).length)
+        }),
+      supabase
+        .from('activity_feed')
+        .select('*')
+        .eq('client_id', client.id)
+        .order('created_at', { ascending: false })
+        .limit(3)
+        .then(({ data, error }) => { if (error) showToast('Fehler beim Laden der Aktivitäten', 'error'); setActivities(data || []) }),
+      supabase
+        .from('contacts')
+        .select('*')
+        .eq('client_id', client.id)
+        .order('sort_order')
+        .then(({ data }) => setContacts(data || [])),
+    ]).finally(() => setLoading(false))
   }, [client])
 
   if (!client) return null
@@ -76,6 +82,17 @@ export default function Overview() {
 
       <AnnouncementBanner />
 
+      {loading && (
+        <>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+            {Array.from({ length: 5 }).map((_, i) => <SkeletonKPI key={i} />)}
+          </div>
+          <SkeletonCard lines={4} />
+          <SkeletonCard lines={3} />
+        </>
+      )}
+
+      {!loading && <>
       {/* KPIs — max 5 */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
         <KPICard label="Aktive Kampagnen" value={String(active.length)} icon={Briefcase} tint="blue" />
@@ -90,6 +107,9 @@ export default function Overview() {
       <QuickActions />
 
       {/* Activity Feed — compact, max 3 */}
+      {activities.length === 0 && (
+        <EmptyState icon={Activity} title="Noch keine Aktivitäten" description="Sobald Aktivitäten stattfinden, sehen Sie diese hier." />
+      )}
       {activities.length > 0 && (
         <div>
           <div className="flex items-center gap-2 mb-3">
@@ -199,6 +219,7 @@ export default function Overview() {
           </div>
         </div>
       </div>
+      </>}
     </div>
   )
 }

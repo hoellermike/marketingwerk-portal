@@ -47,7 +47,19 @@ export default function ActivityFeed() {
       .then(({ data }) => setActivities(data || []))
   }, [client])
 
-  if (activities.length === 0) return null
+  if (activities.length === 0) return (
+    <div>
+      <div className="flex items-center gap-2 mb-3">
+        <Activity size={18} className="text-[#3572E8]" />
+        <h2 className="text-lg font-semibold text-gray-900">Letzte Aktivitäten</h2>
+      </div>
+      <div className="bg-white rounded-xl border border-gray-100 py-12 text-center">
+        <Activity size={28} className="mx-auto text-gray-300 mb-2" />
+        <p className="text-sm text-gray-500 font-medium">Noch keine Aktivitäten</p>
+        <p className="text-xs text-gray-400 mt-1">Sobald Aktivitäten stattfinden, sehen Sie diese hier.</p>
+      </div>
+    </div>
+  )
 
   return (
     <div>

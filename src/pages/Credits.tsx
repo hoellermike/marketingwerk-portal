@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
-import { CreditCard, TrendingDown, Info, ExternalLink, Download } from 'lucide-react'
+import { CreditCard, TrendingDown, Info, ExternalLink, Download, Receipt } from 'lucide-react'
+import { SkeletonKPI, SkeletonTable } from '../components/Skeleton'
+import EmptyState from '../components/EmptyState'
+import { useToast } from '../contexts/ToastContext'
 import KPICard from '../components/KPICard'
 import CreditForecast from '../components/CreditForecast'
 import { formatNumber, formatDate } from '../lib/format'
@@ -20,7 +23,9 @@ interface CreditTransaction {
 export default function Credits() {
   const { client } = useAuth()
   const [txns, setTxns] = useState<CreditTransaction[]>([])
+  const [loading, setLoading] = useState(true)
   const [showExport, setShowExport] = useState(false)
+  const { showToast } = useToast()
 
   const handleExport = (format: 'xlsx' | 'csv') => {
     const headers: Record<string, string> = {
@@ -44,12 +49,14 @@ export default function Credits() {
 
   useEffect(() => {
     if (!client) return
+    setLoading(true)
     supabase
       .from('credit_transactions')
       .select('*')
       .eq('client_id', client.id)
       .order('date', { ascending: false })
-      .then(({ data }) => setTxns(data || []))
+      .then(({ data, error }) => { if (error) showToast('Fehler beim Laden der Credits', 'error'); setTxns(data || []) })
+      .finally(() => setLoading(false))
   }, [client])
 
   if (!client) return null
@@ -61,6 +68,14 @@ export default function Credits() {
         <p className="text-sm text-gray-500 mt-1">Ihr Credit-Guthaben und alle Transaktionen im Überblick.</p>
       </div>
 
+      {loading ? (
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {Array.from({ length: 3 }).map((_, i) => <SkeletonKPI key={i} />)}
+          </div>
+          <SkeletonTable rows={4} cols={4} />
+        </>
+      ) : <>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <KPICard label="Verfügbare Credits" value={formatNumber(client.credits_available)} icon={CreditCard} tint="gold" />
         <KPICard label="Verbraucht gesamt" value={formatNumber(client.credits_used)} icon={TrendingDown} tint="peach" />
@@ -69,6 +84,9 @@ export default function Credits() {
 
       <CreditForecast creditsAvailable={client.credits_available} transactions={txns} />
 
+      {txns.length === 0 && (
+        <EmptyState icon={Receipt} title="Keine Transaktionen" description="Sobald Credit-Buchungen stattfinden, sehen Sie diese hier." />
+      )}
       {txns.length > 0 && (
         <div>
           <div className="flex items-center justify-between mb-3">
@@ -121,6 +139,8 @@ export default function Credits() {
           </div>
         </div>
       )}
+
+      </>}
 
       {showExport && (
         <ExportModal
